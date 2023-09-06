@@ -15,11 +15,12 @@ public class FacultyService {
 
     public Faculty addFaculty(Faculty faculty) {
         faculty.setId(++lastId);
-        return faculties.put(lastId, faculty);
+        faculties.put(lastId, faculty);
+        return faculty;
     }
 
     public Faculty findFaculty(Long id) {
-        return faculties.get(id);
+        return faculties.getOrDefault(id, null);
     }
 
     public Faculty updateFaculty(Faculty faculty) {
