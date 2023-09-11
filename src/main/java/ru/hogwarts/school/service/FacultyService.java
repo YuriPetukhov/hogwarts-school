@@ -1,42 +1,20 @@
 package ru.hogwarts.school.service;
 
-import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.repository.FacultyRepository;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-@Service
-public class FacultyService {
+public interface FacultyService {
 
-    private final FacultyRepository repository;
+    Faculty addFaculty(Faculty faculty);
 
-    public FacultyService(FacultyRepository repository) {
-        this.repository = repository;
-    }
+    Faculty findFaculty(Long id);
 
-    public Faculty addFaculty(Faculty faculty) {
-        return repository.save(faculty);
-    }
+    Faculty updateFaculty(Faculty faculty);
 
-    public Faculty findFaculty(Long id) {
-        return repository.findById(id).get();
-    }
+   void removeFaculty(long id);
 
-    public Faculty updateFaculty(Faculty faculty) {
-        return repository.save(faculty);
-    }
-
-    public void removeFaculty(long id) {
-        repository.deleteById(id);
-    }
-
-    public List<Faculty> getFacultyByColor(String color) {
-        return repository.findAll().stream()
-                .filter(faculty -> faculty.getColor().equals(color))
-                .collect(Collectors.toList());
-    }
+   List<Faculty> getFacultyByColor(String color);
 }
