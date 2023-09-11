@@ -8,7 +8,7 @@ import ru.hogwarts.school.service.StudentService;
 import java.util.List;
 
 @RestController
-@RequestMapping("student")
+@RequestMapping("/student")
 public class StudentController {
 
     private final StudentService service;
@@ -34,8 +34,9 @@ public class StudentController {
         return service.updateStudent(student);
     }
     @DeleteMapping("{id}")
-    public Student removeStudent(@PathVariable Long id){
-        return service.removeStudent(id);
+    public ResponseEntity removeStudent(@PathVariable Long id){
+        service.removeStudent(id);
+        return ResponseEntity.ok().build();
     }
     @GetMapping
     public List<Student> getStudentsByAge(@RequestParam int age){

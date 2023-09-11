@@ -8,7 +8,7 @@ import ru.hogwarts.school.service.FacultyService;
 import java.util.List;
 
 @RestController
-@RequestMapping("faculty")
+@RequestMapping("/faculty")
 public class FacultyController {
     private final FacultyService service;
 
@@ -34,8 +34,9 @@ public class FacultyController {
         return service.updateFaculty(faculty);
     }
     @DeleteMapping("{id}")
-    public Faculty removeFaculty(@PathVariable Long id) {
-        return service.removeFaculty(id);
+    public ResponseEntity removeFaculty(@PathVariable Long id) {
+        service.removeFaculty(id);
+        return ResponseEntity.ok().build();
     }
     @GetMapping
     public List<Faculty> getFacultyByColor(@RequestParam String color) {
