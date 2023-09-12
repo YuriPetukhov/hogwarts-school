@@ -53,7 +53,7 @@ public class FacultyController {
     public ResponseEntity<List<Faculty>> getFacultyByColor(@RequestParam String color) {
         List<Faculty> faculties = service.getFacultyByColor(color);
         if (faculties.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.notFound().build();
         } else {
             return ResponseEntity.ok(faculties);
         }

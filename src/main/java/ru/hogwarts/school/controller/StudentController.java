@@ -53,7 +53,7 @@ public class StudentController {
     public ResponseEntity<List<Student>> getStudentsByAge(@RequestParam int age){
         List<Student> students = service.getStudentsByAge(age);
         if(students.isEmpty()){
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(students);
     }
