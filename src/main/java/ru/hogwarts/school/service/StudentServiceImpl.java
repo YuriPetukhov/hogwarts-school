@@ -1,14 +1,17 @@
 package ru.hogwarts.school.service;
 
 import org.springframework.stereotype.Service;
+import ru.hogwarts.school.exception.ElementNotExistException;
+import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
-public class StudentServiceImpl implements StudentService{
+public class StudentServiceImpl implements StudentService {
     private final StudentRepository repository;
 
     public StudentServiceImpl(StudentRepository repository) {
@@ -18,19 +21,27 @@ public class StudentServiceImpl implements StudentService{
     public Student addStudent(Student student) {
         return repository.save(student);
     }
-    public Student findStudent(Long id) {
-        return repository.findById(id).get();
+
+    public Student findStudent(Long id) throws ElementNotExistException {
+        return repository.findById(id)
+                .orElseThrow(() -> new ElementNotExistException("Такого студента нет в базе"));
     }
-    public Student updateStudent(Student student) {
+
+    public Student updateStudent(Student student) throws ElementNotExistException {
+        if(!repository.existsById(student.getId())){
+            throw new ElementNotExistException("Такого студента нет в базе");
+        }
         return repository.save(student);
     }
-    public void removeStudent(long id) {
-       repository.deleteById(id);
+
+    public void removeStudent(long id) throws ElementNotExistException {
+        if(!repository.existsById(id)) {
+            throw new ElementNotExistException("Такого студента нет в базе");
+        }
+        repository.deleteById(id);
     }
 
     public List<Student> getStudentsByAge(int age) {
-        return repository.findAll().stream()
-                .filter(student -> student.getAge() == age)
-                .collect(Collectors.toList());
+        return repository.findStudentByAge(age);
     }
 }
