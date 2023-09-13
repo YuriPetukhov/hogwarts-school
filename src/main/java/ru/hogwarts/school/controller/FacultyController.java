@@ -65,7 +65,6 @@ public class FacultyController {
         } else {
             return ResponseEntity.ok(Collections.emptyList());
         }
-
         if (faculties.isEmpty()) {
             return ResponseEntity.notFound().build();
         } else {

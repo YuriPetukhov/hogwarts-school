@@ -15,42 +15,42 @@ public class FacultyServiceImpl implements FacultyService {
     public FacultyServiceImpl(FacultyRepository repository) {
         this.repository = repository;
     }
-
+    @Override
     public Faculty addFaculty(Faculty faculty) {
         return repository.save(faculty);
     }
-
+    @Override
     public Faculty findFaculty(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ElementNotExistException("Такого факультета нет в базе"));
     }
-
+    @Override
     public Faculty updateFaculty(Faculty faculty) {
         if (!repository.existsById(faculty.getId())) {
             throw new ElementNotExistException("Такого факультета нет в базе");
         }
         return repository.save(faculty);
     }
-
+    @Override
     public void removeFaculty(long id) {
         if (!repository.existsById(id)) {
             throw new ElementNotExistException("Такого факультета нет в базе");
         }
         repository.deleteById(id);
     }
-
+    @Override
     public List<Faculty> getFacultyByColor(String color) {
         return repository.findAllByColor(color);
     }
-
+    @Override
     public List<Faculty> findByNameOrColorIgnoreCase(String name, String color) {
         return repository.findByNameOrColorIgnoreCase(name, color);
     }
-
+    @Override
     public List<Faculty> getAllFaculties() {
         return repository.findAll();
     }
-
+    @Override
     public List<Faculty> findByNameIgnoreCase(String name) {
         return repository.findByNameIgnoreCase(name);
     }
