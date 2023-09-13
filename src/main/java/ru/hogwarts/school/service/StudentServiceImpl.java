@@ -45,4 +45,7 @@ public class StudentServiceImpl implements StudentService {
     public List<Student> findByAgeBetween(int min, int max) {
         return repository.findByAgeBetween(min, max);
     }
+    public List<Student> getStudentsByFaculty(Long facultyId) {
+        return repository.findByFacultyId(facultyId);
+    }
 }

@@ -65,4 +65,8 @@ public class StudentController {
             throw new ElementNotExistException("Неправильные параметры");
         }
     }
+        @GetMapping("/faculty/{facultyId}")
+        public List<Student> getStudentsByFaculty(@PathVariable Long facultyId) {
+            return service.getStudentsByFaculty(facultyId);
+    }
 }
