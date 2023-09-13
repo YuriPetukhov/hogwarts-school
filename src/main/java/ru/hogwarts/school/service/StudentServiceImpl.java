@@ -19,20 +19,20 @@ public class StudentServiceImpl implements StudentService {
         return repository.save(student);
     }
 
-    public Student findStudent(Long id) throws ElementNotExistException {
+    public Student findStudent(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ElementNotExistException("Такого студента нет в базе"));
     }
 
-    public Student updateStudent(Student student) throws ElementNotExistException {
-        if(!repository.existsById(student.getId())){
+    public Student updateStudent(Student student) {
+        if (!repository.existsById(student.getId())) {
             throw new ElementNotExistException("Такого студента нет в базе");
         }
         return repository.save(student);
     }
 
-    public void removeStudent(long id) throws ElementNotExistException {
-        if(!repository.existsById(id)) {
+    public void removeStudent(long id) {
+        if (!repository.existsById(id)) {
             throw new ElementNotExistException("Такого студента нет в базе");
         }
         repository.deleteById(id);
@@ -40,5 +40,9 @@ public class StudentServiceImpl implements StudentService {
 
     public List<Student> getStudentsByAge(int age) {
         return repository.findStudentByAge(age);
+    }
+
+    public List<Student> findByAgeBetween(int min, int max) {
+        return repository.findByAgeBetween(min, max);
     }
 }
