@@ -14,4 +14,5 @@ public interface StudentService {
 
     List<Student> getStudentsByFaculty(Long facultyId);
 
+    Student getFacultyOfStudent(Long id);
 }

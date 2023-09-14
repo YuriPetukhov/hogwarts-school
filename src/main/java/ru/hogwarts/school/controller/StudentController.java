@@ -66,13 +66,15 @@ public class StudentController {
             throw new ElementNotExistException("Неправильные параметры");
         }
     }
-        @GetMapping("/faculty/{facultyId}")
-        public List<Student> getStudentsByFaculty(@PathVariable Long facultyId) {
-            return service.getStudentsByFaculty(facultyId);
+
+    @GetMapping("/faculty/{facultyId}")
+    public List<Student> getStudentsByFaculty(@PathVariable Long facultyId) {
+        return service.getStudentsByFaculty(facultyId);
     }
+
     @GetMapping("{id}/faculty")
     public ResponseEntity<Faculty> getFacultyOfStudent(@PathVariable Long id) {
-        Student student = service.findStudent(id);
+        Student student = service.getFacultyOfStudent(id);
 
         if (student == null) {
             throw new ElementNotExistException("Студент не найден");
