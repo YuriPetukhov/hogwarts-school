@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.exception.ElementNotExistException;
 import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.FacultyService;
 
 import java.util.Collections;
@@ -69,6 +70,16 @@ public class FacultyController {
             return ResponseEntity.notFound().build();
         } else {
             return ResponseEntity.ok(faculties);
+        }
+    }
+    @GetMapping("{id}/students")
+    public ResponseEntity<List<Student>> getStudentsOfFaculty(@PathVariable Long id) {
+        Faculty faculty = service.findFaculty(id);
+
+        if (faculty == null) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(faculty.getStudents());
         }
     }
 }

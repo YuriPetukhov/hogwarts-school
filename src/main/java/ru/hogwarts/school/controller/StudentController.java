@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.exception.ElementNotExistException;
+import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
 
@@ -35,7 +36,7 @@ public class StudentController {
     }
 
     @PutMapping
-    public ResponseEntity<Student> updateFaculty(@RequestBody Student student) {
+    public ResponseEntity<Student> updateStudent(@RequestBody Student student) {
         Student updatedStudent = service.updateStudent(student);
         if (updatedStudent == null) {
             throw new ElementNotExistException("Не получилось внести изменения");
@@ -68,5 +69,19 @@ public class StudentController {
         @GetMapping("/faculty/{facultyId}")
         public List<Student> getStudentsByFaculty(@PathVariable Long facultyId) {
             return service.getStudentsByFaculty(facultyId);
+    }
+    @GetMapping("{id}/faculty")
+    public ResponseEntity<Faculty> getFacultyOfStudent(@PathVariable Long id) {
+        Student student = service.findStudent(id);
+
+        if (student == null) {
+            throw new ElementNotExistException("Студент не найден");
+        }
+
+        if (student.getFaculty() == null) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(student.getFaculty());
+        }
     }
 }

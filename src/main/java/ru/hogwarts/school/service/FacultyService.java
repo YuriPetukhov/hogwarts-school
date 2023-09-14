@@ -20,4 +20,5 @@ public interface FacultyService {
     List<Faculty> getAllFaculties();
 
     List<Faculty> findByNameIgnoreCase(String name);
+
 }

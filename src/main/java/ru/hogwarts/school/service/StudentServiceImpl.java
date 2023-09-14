@@ -56,4 +56,5 @@ public class StudentServiceImpl implements StudentService {
     public List<Student> getStudentsByFaculty(Long facultyId) {
         return repository.findByFacultyId(facultyId);
     }
+
 }
