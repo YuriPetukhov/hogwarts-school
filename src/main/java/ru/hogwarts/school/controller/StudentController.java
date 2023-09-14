@@ -73,6 +73,7 @@ public class StudentController {
     }
 
     @GetMapping("{id}/faculty")
+    @ResponseStatus(code = HttpStatus.NOT_FOUND)
     public ResponseEntity<Faculty> getFacultyOfStudent(@PathVariable Long id) {
         Faculty faculty = service.getFacultyOfStudent(id);
 

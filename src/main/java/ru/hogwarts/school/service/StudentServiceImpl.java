@@ -60,10 +60,8 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Faculty getFacultyOfStudent(Long id) {
-        Student student = repository.getStudentById(id);
-        if (student == null) {
-            throw new ElementNotExistException("Такого студента нет в базе");
-        }
+        Student student = repository.findById(id)
+                .orElseThrow(() -> new ElementNotExistException("Такого студента нет в базе"));
         return student.getFaculty();
     }
 }
