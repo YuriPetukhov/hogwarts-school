@@ -74,16 +74,12 @@ public class StudentController {
 
     @GetMapping("{id}/faculty")
     public ResponseEntity<Faculty> getFacultyOfStudent(@PathVariable Long id) {
-        Student student = service.getFacultyOfStudent(id);
+        Faculty faculty = service.getFacultyOfStudent(id);
 
-        if (student == null) {
-            throw new ElementNotExistException("Студент не найден");
-        }
-
-        if (student.getFaculty() == null) {
-            return ResponseEntity.notFound().build();
+        if (faculty == null) {
+            throw new ElementNotExistException("Факультет не найден");
         } else {
-            return ResponseEntity.ok(student.getFaculty());
+            return ResponseEntity.ok(faculty);
         }
     }
 }

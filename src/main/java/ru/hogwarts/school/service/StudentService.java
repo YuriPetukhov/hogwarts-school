@@ -1,5 +1,6 @@
 package ru.hogwarts.school.service;
 
+import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 
 import java.util.List;
@@ -14,5 +15,5 @@ public interface StudentService {
 
     List<Student> getStudentsByFaculty(Long facultyId);
 
-    Student getFacultyOfStudent(Long id);
+    Faculty getFacultyOfStudent(Long id);
 }
