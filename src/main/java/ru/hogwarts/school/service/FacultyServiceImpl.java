@@ -43,15 +43,7 @@ public class FacultyServiceImpl implements FacultyService {
         return repository.findAllByColor(color);
     }
     @Override
-    public List<Faculty> findByNameOrColorIgnoreCase(String name, String color) {
-        return repository.findByNameOrColorIgnoreCase(name, color);
-    }
-    @Override
-    public List<Faculty> getAllFaculties() {
-        return repository.findAll();
-    }
-    @Override
-    public List<Faculty> findByNameIgnoreCase(String name) {
-        return repository.findByNameIgnoreCase(name);
+    public List<Faculty> findByNameIgnoreCaseOrColorIgnoreCase(String name, String color) {
+        return repository.findByNameIgnoreCaseOrColorIgnoreCase(name, color);
     }
 }

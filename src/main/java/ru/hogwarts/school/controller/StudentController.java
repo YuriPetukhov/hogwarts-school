@@ -51,31 +51,31 @@ public class StudentController {
         service.removeStudent(id);
     }
 
-    @GetMapping
-    public ResponseEntity<List<Student>> getStudentsByAgeOrByAgeBetween(
-            @RequestParam(required = false) Integer age,
+    @GetMapping("/age")
+    public ResponseEntity<List<Student>> getStudentsByAge(
+            @RequestParam(required = false) Integer age) {
+        if (age == null) {
+            throw new ElementNotExistException("Не указан параметр age");
+        }
+
+        return ResponseEntity.ok(service.getStudentsByAge(age));
+    }
+    @GetMapping("/age-range")
+    public ResponseEntity<List<Student>> findByAgeBetween(
             @RequestParam(required = false) Integer min,
             @RequestParam(required = false) Integer max) {
-        if (age == null && min != null && min.equals(max)) {
-            return ResponseEntity.ok(service.getStudentsByAge(min));
-        } else if (age != null && min == null && max == null) {
-            return ResponseEntity.ok(service.getStudentsByAge(age));
-        } else if (age == null && min != null && max != null && min < max) {
-            return ResponseEntity.ok(service.findByAgeBetween(min, max));
-        } else {
-            throw new ElementNotExistException("Неправильные параметры");
+        if (min == null || max == null) {
+            throw new ElementNotExistException("Не указаны параметры min и max");
+        } else if (min >= max) {
+            throw new ElementNotExistException("Неправильные параметры диапазона");
         }
+
+        return ResponseEntity.ok(service.findByAgeBetween(min, max));
     }
 
-    @GetMapping("/faculty/{facultyId}")
-    public List<Student> getStudentsByFaculty(@PathVariable Long facultyId) {
-        return service.getStudentsByFaculty(facultyId);
-    }
-
-    @GetMapping("{id}/faculty")
-    @ResponseStatus(code = HttpStatus.NOT_FOUND)
-    public ResponseEntity<Faculty> getFacultyOfStudent(@PathVariable Long id) {
-        Faculty faculty = service.getFacultyOfStudent(id);
+    @GetMapping("{studentId}/faculty")
+    public ResponseEntity<Faculty> getFacultyOfStudent(@PathVariable Long studentId) {
+        Faculty faculty = service.getFacultyOfStudent(studentId);
 
         if (faculty == null) {
             throw new ElementNotExistException("Факультет не найден");

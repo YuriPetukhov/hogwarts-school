@@ -21,7 +21,6 @@ public class FacultyController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public Faculty addFaculty(@RequestBody Faculty faculty) {
         return service.addFaculty(faculty);
     }
@@ -47,31 +46,32 @@ public class FacultyController {
     }
 
     @DeleteMapping("{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeFaculty(@PathVariable Long id) {
-        service.removeFaculty(id);
+    public ResponseEntity<String> removeFaculty(@PathVariable Long id) {
+        try {
+            service.removeFaculty(id);
+            return ResponseEntity.ok("Факультет успешно удален");
+        } catch (ElementNotExistException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+    }
+
+    @GetMapping("/color")
+    public List<Faculty> getFacultyByColor(@RequestParam String color) {
+        return service.getFacultyByColor(color);
     }
 
     @GetMapping
-    public ResponseEntity<List<Faculty>> findByNameOrColorIgnoreCase(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String color) {
-        List<Faculty> faculties;
-        if (name != null && color != null) {
-            faculties = service.findByNameOrColorIgnoreCase(name, color);
-        } else if (name != null) {
-            faculties = service.findByNameIgnoreCase(name);
-        } else if (color != null) {
-            faculties = service.getFacultyByColor(color);
-        } else {
-            return ResponseEntity.ok(Collections.emptyList());
-        }
+    public ResponseEntity<List<Faculty>> findByNameIgnoreCaseOrColorIgnoreCase(
+            @RequestParam String nameOrColor) {
+        List<Faculty> faculties = service.findByNameIgnoreCaseOrColorIgnoreCase(nameOrColor, nameOrColor);
+
         if (faculties.isEmpty()) {
             return ResponseEntity.notFound().build();
         } else {
             return ResponseEntity.ok(faculties);
         }
     }
+
     @GetMapping("{id}/students")
     public ResponseEntity<List<Student>> getStudentsOfFaculty(@PathVariable Long id) {
         Faculty faculty = service.findFaculty(id);
