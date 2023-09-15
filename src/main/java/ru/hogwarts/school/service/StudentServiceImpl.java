@@ -1,7 +1,6 @@
 package ru.hogwarts.school.service;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.hogwarts.school.exception.ElementNotExistException;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
@@ -57,7 +56,6 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    @Transactional
     public Faculty getFacultyOfStudent(Long studentId) {
         Student student = repository.findById(studentId)
                 .orElseThrow(() -> new ElementNotExistException("Такого студента нет в базе"));

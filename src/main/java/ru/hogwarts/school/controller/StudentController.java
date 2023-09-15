@@ -13,7 +13,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/student")
 public class StudentController {
-
     private final StudentService service;
 
     public StudentController(StudentService service) {
@@ -57,9 +56,9 @@ public class StudentController {
         if (age == null) {
             throw new ElementNotExistException("Не указан параметр age");
         }
-
         return ResponseEntity.ok(service.getStudentsByAge(age));
     }
+
     @GetMapping("/age-range")
     public ResponseEntity<List<Student>> findByAgeBetween(
             @RequestParam(required = false) Integer min,
@@ -69,7 +68,6 @@ public class StudentController {
         } else if (min >= max) {
             throw new ElementNotExistException("Неправильные параметры диапазона");
         }
-
         return ResponseEntity.ok(service.findByAgeBetween(min, max));
     }
 
