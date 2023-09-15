@@ -12,9 +12,11 @@ import java.util.List;
 @Service
 public class StudentServiceImpl implements StudentService {
     private final StudentRepository repository;
+    private final FacultyService facultyService;
 
-    public StudentServiceImpl(StudentRepository repository) {
+    public StudentServiceImpl(StudentRepository repository, FacultyService facultyService) {
         this.repository = repository;
+        this.facultyService = facultyService;
     }
 
     @Override
