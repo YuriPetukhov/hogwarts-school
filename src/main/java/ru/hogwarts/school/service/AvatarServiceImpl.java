@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
+@Transactional
 @Service
 public class AvatarServiceImpl implements AvatarService{
     private final AvatarRepository avatarRepository;
@@ -27,7 +28,6 @@ public class AvatarServiceImpl implements AvatarService{
     }
 
     @Override
-    @Transactional
     public void uploadAvatar(Long studentId, MultipartFile avatarFile) throws IOException {
         Student student = studentService.findStudent(studentId);
         Path filePath = Path.of(avatarsDir, studentId + "." + getExtension(Objects.requireNonNull(avatarFile.getOriginalFilename())));
@@ -49,7 +49,7 @@ public class AvatarServiceImpl implements AvatarService{
         avatar.setData(avatarFile.getBytes());
         avatarRepository.save(avatar);
     }
-    @Transactional
+
     public Avatar findAvatar(Long studentId) {
         return avatarRepository.findByStudentId(studentId).orElse(new Avatar());
     }
