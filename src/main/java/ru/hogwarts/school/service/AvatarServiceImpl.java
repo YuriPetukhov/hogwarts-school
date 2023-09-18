@@ -49,8 +49,7 @@ public class AvatarServiceImpl implements AvatarService{
         avatar.setData(avatarFile.getBytes());
         avatarRepository.save(avatar);
     }
-
-
+    @Transactional
     public Avatar findAvatar(Long studentId) {
         return avatarRepository.findByStudentId(studentId).orElse(new Avatar());
     }

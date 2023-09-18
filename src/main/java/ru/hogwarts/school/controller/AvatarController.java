@@ -31,7 +31,6 @@ public class AvatarController {
         return ResponseEntity.ok().build();
     }
     @GetMapping(value = "/{id}/avatar/preview")
-    @Transactional
     public ResponseEntity<byte[]> downloadAvatar(@PathVariable Long id) {
         Avatar avatar = avatarService.findAvatar(id);
         HttpHeaders headers = new HttpHeaders();
@@ -40,7 +39,6 @@ public class AvatarController {
         return ResponseEntity.status(HttpStatus.OK).headers(headers).body(avatar.getData());
     }
     @GetMapping(value = "/{id}/avatar")
-    @Transactional
     public void downloadAvatar(@PathVariable Long id, HttpServletResponse response) throws IOException{
         Avatar avatar = avatarService.findAvatar(id);
         Path path = Path.of(avatar.getFilePath());
