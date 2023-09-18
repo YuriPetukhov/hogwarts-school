@@ -12,6 +12,7 @@ public class Avatar {
     String filePath;
     long fileSize;
     String mediaType;
+    @Lob
     byte[] data;
     @OneToOne
     Student student;
