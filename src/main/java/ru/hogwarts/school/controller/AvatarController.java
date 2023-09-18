@@ -4,6 +4,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hogwarts.school.model.Avatar;
@@ -29,7 +30,8 @@ public class AvatarController {
         avatarService.uploadAvatar(studentId, avatar);
         return ResponseEntity.ok().build();
     }
-    @GetMapping(value = "/{id}/avatar-from-db")
+    @GetMapping(value = "/{id}/avatar/preview")
+    @Transactional
     public ResponseEntity<byte[]> downloadAvatar(@PathVariable Long id) {
         Avatar avatar = avatarService.findAvatar(id);
         HttpHeaders headers = new HttpHeaders();
@@ -37,7 +39,8 @@ public class AvatarController {
         headers.setContentLength(avatar.getData().length);
         return ResponseEntity.status(HttpStatus.OK).headers(headers).body(avatar.getData());
     }
-    @GetMapping(value = "/{id}/avatar-from-file")
+    @GetMapping(value = "/{id}/avatar")
+    @Transactional
     public void downloadAvatar(@PathVariable Long id, HttpServletResponse response) throws IOException{
         Avatar avatar = avatarService.findAvatar(id);
         Path path = Path.of(avatar.getFilePath());

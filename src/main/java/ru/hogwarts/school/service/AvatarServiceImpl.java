@@ -2,6 +2,7 @@ package ru.hogwarts.school.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hogwarts.school.model.Avatar;
 import ru.hogwarts.school.model.Student;
@@ -24,7 +25,9 @@ public class AvatarServiceImpl implements AvatarService{
         this.avatarRepository = avatarRepository;
         this.studentService = studentService;
     }
+
     @Override
+    @Transactional
     public void uploadAvatar(Long studentId, MultipartFile avatarFile) throws IOException {
         Student student = studentService.findStudent(studentId);
         Path filePath = Path.of(avatarsDir, studentId + "." + getExtension(Objects.requireNonNull(avatarFile.getOriginalFilename())));
@@ -39,9 +42,6 @@ public class AvatarServiceImpl implements AvatarService{
             bis.transferTo(bos);
         }
         Avatar avatar = findAvatar(studentId);
-        if (avatar == null) {
-            avatar = new Avatar();
-        }
         avatar.setStudent(student);
         avatar.setFilePath(filePath.toString());
         avatar.setFileSize(avatarFile.getSize());
@@ -52,7 +52,7 @@ public class AvatarServiceImpl implements AvatarService{
 
 
     public Avatar findAvatar(Long studentId) {
-        return avatarRepository.findByStudentId(studentId);
+        return avatarRepository.findByStudentId(studentId).orElse(new Avatar());
     }
 
     private String getExtension(String fileName) {
