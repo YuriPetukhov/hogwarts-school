@@ -1,6 +1,8 @@
 package ru.hogwarts.school.controller;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.exception.ElementNotExistException;
@@ -73,13 +75,18 @@ public class FacultyController {
     }
 
     @GetMapping("{id}/students")
-    public ResponseEntity<Set<Student>> getStudentsOfFaculty(@PathVariable Long id) {
+    public ResponseEntity<List<Student>> getStudentsOfFaculty(@PathVariable Long id) {
         Faculty faculty = service.findFaculty(id);
 
         if (faculty == null) {
             return ResponseEntity.notFound().build();
         } else {
-            return ResponseEntity.ok(faculty.getStudents());
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(faculty.getStudents());
         }
     }
 }

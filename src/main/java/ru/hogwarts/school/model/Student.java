@@ -16,7 +16,6 @@ public class Student {
     public Student() {
     }
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "faculty_id")
     private Faculty faculty;
