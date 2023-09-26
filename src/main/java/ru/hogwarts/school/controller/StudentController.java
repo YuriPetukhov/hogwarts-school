@@ -1,5 +1,6 @@
 package ru.hogwarts.school.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,20 +14,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/student")
 public class StudentController {
-    private final StudentService service;
+    private final StudentService studentService;
 
-    public StudentController(StudentService service) {
-        this.service = service;
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
     }
 
     @PostMapping
     public Student addStudent(@RequestBody Student student) {
-        return service.addStudent(student);
+        return studentService.addStudent(student);
     }
 
     @GetMapping("{id}")
     public ResponseEntity<Student> findStudent(@PathVariable Long id) {
-        Student foundStudent = service.findStudent(id);
+        Student foundStudent = studentService.findStudent(id);
         if (foundStudent == null) {
             throw new ElementNotExistException("Студент не найден");
         } else {
@@ -36,7 +37,7 @@ public class StudentController {
 
     @PutMapping
     public ResponseEntity<Student> updateStudent(@RequestBody Student student) {
-        Student updatedStudent = service.updateStudent(student);
+        Student updatedStudent = studentService.updateStudent(student);
         if (updatedStudent == null) {
             throw new ElementNotExistException("Не получилось внести изменения");
         } else {
@@ -47,7 +48,7 @@ public class StudentController {
     @DeleteMapping("{id}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void removeStudent(@PathVariable Long id) {
-        service.removeStudent(id);
+        studentService.removeStudent(id);
     }
 
     @GetMapping("/age")
@@ -56,7 +57,7 @@ public class StudentController {
         if (age == null) {
             throw new ElementNotExistException("Не указан параметр age");
         }
-        return ResponseEntity.ok(service.getStudentsByAge(age));
+        return ResponseEntity.ok(studentService.getStudentsByAge(age));
     }
 
     @GetMapping("/age-range")
@@ -68,12 +69,12 @@ public class StudentController {
         } else if (min >= max) {
             throw new ElementNotExistException("Неправильные параметры диапазона");
         }
-        return ResponseEntity.ok(service.findByAgeBetween(min, max));
+        return ResponseEntity.ok(studentService.findByAgeBetween(min, max));
     }
 
     @GetMapping("{studentId}/faculty")
-    public ResponseEntity<Faculty> getFacultyOfStudent(@PathVariable Long studentId) {
-        Faculty faculty = service.getFacultyOfStudent(studentId);
+    public ResponseEntity<Faculty> getFacultyOfStudent(@PathVariable("studentId") Long id) {
+        Faculty faculty = studentService.getFacultyOfStudent(id);
 
         if (faculty == null) {
             throw new ElementNotExistException("Факультет не найден");

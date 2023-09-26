@@ -51,7 +51,7 @@ public class FacultyController {
     public ResponseEntity<String> removeFaculty(@PathVariable Long id) {
         try {
             service.removeFaculty(id);
-            return ResponseEntity.ok("Факультет успешно удален");
+            return ResponseEntity.ok("The faculty has been successfully removed.");
         } catch (ElementNotExistException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }

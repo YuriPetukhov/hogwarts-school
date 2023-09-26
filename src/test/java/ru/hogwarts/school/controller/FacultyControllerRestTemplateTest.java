@@ -12,6 +12,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import ru.hogwarts.school.exception.ElementNotExistException;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
@@ -89,7 +90,7 @@ class FacultyControllerRestTemplateTest {
     @Order(3)
     void testUpdateFaculty() {
         if (facultyId == null) {
-            throw new IllegalStateException("Такого факультета нет.");
+            throw new ElementNotExistException("Такого факультета нет.");
         }
 
         Faculty updatedFaculty = new Faculty();
@@ -109,7 +110,7 @@ class FacultyControllerRestTemplateTest {
     @Order(4)
     void TestRemoveFaculty() {
         if (facultyId == null) {
-            throw new IllegalStateException("Такого факультета нет.");
+            throw new ElementNotExistException("Такого факультета нет.");
         }
 
         this.testRestTemplate.delete("http://localhost:" + localServerPort + "/faculty/" + facultyId);

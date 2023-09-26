@@ -10,54 +10,52 @@ import java.util.List;
 
 @Service
 public class StudentServiceImpl implements StudentService {
-    private final StudentRepository repository;
-    private final FacultyService facultyService;
+    private final StudentRepository studentRepository;
 
-    public StudentServiceImpl(StudentRepository repository, FacultyService facultyService) {
-        this.repository = repository;
-        this.facultyService = facultyService;
+    public StudentServiceImpl(StudentRepository repository) {
+        this.studentRepository = repository;
     }
 
     @Override
     public Student addStudent(Student student) {
-        return repository.save(student);
+        return studentRepository.save(student);
     }
 
     @Override
     public Student findStudent(Long id) {
-        return repository.findById(id)
+        return studentRepository.findById(id)
                 .orElseThrow(() -> new ElementNotExistException("Такого студента нет в базе"));
     }
 
     @Override
     public Student updateStudent(Student student) {
-        if (!repository.existsById(student.getId())) {
+        if (!studentRepository.existsById(student.getId())) {
             throw new ElementNotExistException("Такого студента нет в базе");
         }
-        return repository.save(student);
+        return studentRepository.save(student);
     }
 
     @Override
     public void removeStudent(long id) {
-        if (!repository.existsById(id)) {
+        if (!studentRepository.existsById(id)) {
             throw new ElementNotExistException("Такого студента нет в базе");
         }
-        repository.deleteById(id);
+        studentRepository.deleteById(id);
     }
 
     @Override
     public List<Student> getStudentsByAge(int age) {
-        return repository.findStudentByAge(age);
+        return studentRepository.findStudentByAge(age);
     }
 
     @Override
     public List<Student> findByAgeBetween(int min, int max) {
-        return repository.findByAgeBetween(min, max);
+        return studentRepository.findByAgeBetween(min, max);
     }
 
     @Override
     public Faculty getFacultyOfStudent(Long studentId) {
-        Student student = repository.findById(studentId)
+        Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ElementNotExistException("Такого студента нет в базе"));
         return student.getFaculty();
     }

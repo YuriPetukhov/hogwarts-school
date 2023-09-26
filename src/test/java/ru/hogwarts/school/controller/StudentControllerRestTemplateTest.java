@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import ru.hogwarts.school.exception.ElementNotExistException;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
@@ -96,7 +97,7 @@ class StudentControllerRestTemplateTest {
     @Order(3)
     void testUpdateStudent() {
         if (studentId == null) {
-            throw new IllegalStateException("Такого студента нет в базе.");
+            throw new ElementNotExistException("Такого студента нет в базе.");
         }
 
         Student updatedStudent = new Student();
@@ -116,7 +117,7 @@ class StudentControllerRestTemplateTest {
     @Order(4)
     void testRemoveStudent() {
         if (studentId == null) {
-            throw new IllegalStateException("Такого студента нет в базе.");
+            throw new ElementNotExistException("Такого студента нет в базе.");
         }
 
         this.testRestTemplate.delete("http://localhost:" + localServerPort + "/student/" + studentId);
@@ -165,7 +166,7 @@ class StudentControllerRestTemplateTest {
 
         ResponseEntity<Faculty> response = testRestTemplate.getForEntity(url, Faculty.class);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(response.getBody().getName()).isEqualTo(testFaculty.getName());
+        Assertions.assertThat(Objects.requireNonNull(response.getBody()).getName()).isEqualTo(testFaculty.getName());
 
         studentRepository.delete(savedStudent);
     }
