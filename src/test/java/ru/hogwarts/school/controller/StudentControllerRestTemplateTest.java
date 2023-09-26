@@ -80,10 +80,13 @@ class StudentControllerRestTemplateTest {
 
         Student savedTestStudent = this.testRestTemplate.postForObject("http://localhost:" + localServerPort +
                 "/student", testStudent, Student.class);
+
         Assertions.assertThat(savedTestStudent).isNotNull();
+        Assertions.assertThat(savedTestStudent.getName()).isEqualTo(testStudent.getName());
+        Assertions.assertThat(savedTestStudent.getAge()).isEqualTo(testStudent.getAge());
+
         studentId = savedTestStudent.getId();
     }
-
     @Test
     @Order(2)
     void testFindStudent() {

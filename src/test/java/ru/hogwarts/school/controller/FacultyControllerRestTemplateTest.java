@@ -74,8 +74,13 @@ class FacultyControllerRestTemplateTest {
         Faculty savedTestFaculty = this.testRestTemplate.postForObject("http://localhost:" + localServerPort +
                 "/faculty", testFaculty, Faculty.class);
         Assertions.assertThat(savedTestFaculty).isNotNull();
+        Assertions.assertThat(savedTestFaculty.getId()).isNotNull();
+        Assertions.assertThat(savedTestFaculty.getName()).isEqualTo(testFaculty.getName());
+        Assertions.assertThat(savedTestFaculty.getColor()).isEqualTo(testFaculty.getColor());
+
         facultyId = savedTestFaculty.getId();
     }
+
 
     @Test
     @Order(2)
@@ -122,11 +127,19 @@ class FacultyControllerRestTemplateTest {
     @Test
     @Order(5)
     void testGetFacultyByColor() {
-        Assertions
-                .assertThat(this.testRestTemplate.getForObject("http://localhost:" + localServerPort +
-                        "/faculty/testColor", String.class))
-                .isNotNull();
+        Faculty testFaculty1 = facultyRepository.save(faculties.get(0));
+
+        ResponseEntity<List<Faculty>> response = this.testRestTemplate.exchange("http://localhost:" + localServerPort +
+                        "/faculty/color?color=" + testFaculty1.getColor(), HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<Faculty>>() {
+                });
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(response.getBody()).isNotEmpty();
+        Assertions.assertThat(response.getBody().size()).isEqualTo(1);
+        Assertions.assertThat(response.getBody().get(0).getName()).isEqualTo("TestFaculty1");
+        Assertions.assertThat(response.getBody().get(0).getColor()).isEqualTo("TestColor1");
     }
+
 
     @Test
     @Order(6)
