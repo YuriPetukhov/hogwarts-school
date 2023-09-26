@@ -1,5 +1,7 @@
 package ru.hogwarts.school.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,12 +86,20 @@ class FacultyControllerRestTemplateTest {
 
     @Test
     @Order(2)
-    void testFindFaculty() {
-        Assertions
-                .assertThat(this.testRestTemplate.getForObject("http://localhost:" + localServerPort +
-                        "/faculty/1", String.class))
-                .isNotNull();
+    void testFindFaculty() throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String response = this.testRestTemplate.getForObject("http://localhost:" +
+                localServerPort + "/faculty/" + facultyId, String.class);
+
+        Assertions.assertThat(response).isNotNull();
+
+        Faculty faculty = objectMapper.readValue(response, Faculty.class);
+        Assertions.assertThat(faculty).isNotNull();
+        Assertions.assertThat(faculty.getId()).isEqualTo(facultyId);
+        Assertions.assertThat(faculty.getName()).isEqualTo("TestFaculty");
+        Assertions.assertThat(faculty.getColor()).isEqualTo("TestColor");
     }
+
 
     @Test
     @Order(3)
@@ -174,7 +184,7 @@ class FacultyControllerRestTemplateTest {
     }
 
     @Test
-    @Order(8)
+    @Order(7)
     void testGetStudentsOfFaculty() {
 
         Faculty testFaculty = new Faculty();

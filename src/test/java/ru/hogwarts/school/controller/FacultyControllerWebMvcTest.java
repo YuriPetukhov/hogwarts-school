@@ -31,7 +31,6 @@ class FacultyControllerWebMvcTest {
     private FacultyRepository facultyRepository;
     @SpyBean
     private FacultyServiceImpl facultyService;
-    @InjectMocks
     private FacultyController facultyController;
 
     @Test

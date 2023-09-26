@@ -90,10 +90,21 @@ class StudentControllerRestTemplateTest {
     @Test
     @Order(2)
     void testFindStudent() {
-        Assertions
-                .assertThat(this.testRestTemplate.getForObject("http://localhost:" + localServerPort +
-                        "/student/1", String.class))
-                .isNotNull();
+
+        Student testStudent = new Student();
+        testStudent.setAge(10);
+        testStudent.setName("Mike");
+        Student savedTestStudent = studentRepository.save(testStudent);
+
+        Student foundStudent = this.testRestTemplate.getForObject("http://localhost:" + localServerPort +
+                "/student/" + savedTestStudent.getId(), Student.class);
+
+        Assertions.assertThat(foundStudent).isNotNull();
+        Assertions.assertThat(foundStudent.getId()).isEqualTo(savedTestStudent.getId());
+        Assertions.assertThat(foundStudent.getName()).isEqualTo(testStudent.getName());
+        Assertions.assertThat(foundStudent.getAge()).isEqualTo(testStudent.getAge());
+
+        studentRepository.delete(savedTestStudent);
     }
 
     @Test

@@ -32,7 +32,6 @@ class StudentControllerWebMvcTest {
     private StudentRepository studentRepository;
     @SpyBean
     private StudentServiceImpl studentService;
-    @InjectMocks
     private StudentController studentController;
 
     @Test
