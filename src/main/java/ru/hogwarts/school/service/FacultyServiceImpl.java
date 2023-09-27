@@ -3,7 +3,9 @@ package ru.hogwarts.school.service;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.exception.ElementNotExistException;
 import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
+import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.List;
 
@@ -11,9 +13,11 @@ import java.util.List;
 public class FacultyServiceImpl implements FacultyService {
 
     private final FacultyRepository repository;
+    private final StudentService studentService;
 
-    public FacultyServiceImpl(FacultyRepository repository) {
+    public FacultyServiceImpl(FacultyRepository repository, StudentService studentService) {
         this.repository = repository;
+        this.studentService = studentService;
     }
 
     @Override
@@ -51,5 +55,26 @@ public class FacultyServiceImpl implements FacultyService {
     @Override
     public List<Faculty> findByNameIgnoreCaseOrColorIgnoreCase(String name, String color) {
         return repository.findByNameIgnoreCaseOrColorIgnoreCase(name, color);
+    }
+    @Override
+    public Student addStudentToFaculty(Long facultyId, Student newStudent) {
+        Faculty faculty = repository.findById(facultyId)
+                .orElseThrow(() -> new RuntimeException("Faculty not found with id: " + facultyId));
+
+        newStudent.setFaculty(faculty);
+
+        Student savedStudent =  studentService.addStudent(newStudent);
+        savedStudent.setFaculty(faculty);
+        return studentService.updateStudent(savedStudent);
+    }
+    @Override
+    public Student changeStudentFaculty(Long studentId, Long facultyId) {
+        Student student = studentService.findStudent(studentId);
+        Faculty faculty = repository.findById(facultyId)
+                .orElseThrow(() -> new RuntimeException("Faculty not found with id: " + facultyId));
+
+        student.setFaculty(faculty);
+
+        return studentService.addStudent(student);
     }
 }

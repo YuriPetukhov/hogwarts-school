@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -39,8 +40,8 @@ class StudentControllerRestTemplateTest {
     private static List<Student> students;
     private static Long studentId;
 
-    @BeforeAll
-    public static void setup() {
+    @BeforeEach
+    public void setup() {
 
         students = new ArrayList<>();
         Student student1 = new Student();
@@ -74,9 +75,7 @@ class StudentControllerRestTemplateTest {
     @Test
     @Order(1)
     public void testAddStudent() throws Exception {
-        Student testStudent = new Student();
-        testStudent.setAge(12);
-        testStudent.setName("Peter");
+        Student testStudent = students.get(0);
 
         Student savedTestStudent = this.testRestTemplate.postForObject("http://localhost:" + localServerPort +
                 "/student", testStudent, Student.class);
@@ -91,9 +90,7 @@ class StudentControllerRestTemplateTest {
     @Order(2)
     void testFindStudent() {
 
-        Student testStudent = new Student();
-        testStudent.setAge(10);
-        testStudent.setName("Mike");
+        Student testStudent = students.get(0);
         Student savedTestStudent = studentRepository.save(testStudent);
 
         Student foundStudent = this.testRestTemplate.getForObject("http://localhost:" + localServerPort +
@@ -114,16 +111,16 @@ class StudentControllerRestTemplateTest {
             throw new ElementNotExistException("Такого студента нет в базе.");
         }
 
-        Student updatedStudent = new Student();
+        Student updatedStudent = students.get(0);
         updatedStudent.setId(studentId);
-        updatedStudent.setName("John");
+        updatedStudent.setName("Mark");
         updatedStudent.setAge(15);
 
         ResponseEntity<Student> response = this.testRestTemplate.exchange("http://localhost:" + localServerPort +
                 "/student", HttpMethod.PUT, new HttpEntity<>(updatedStudent), Student.class);
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(Objects.requireNonNull(response.getBody()).getName()).isEqualTo("John");
+        Assertions.assertThat(Objects.requireNonNull(response.getBody()).getName()).isEqualTo("Mark");
         Assertions.assertThat(response.getBody().getAge()).isEqualTo(15);
     }
 
@@ -143,11 +140,30 @@ class StudentControllerRestTemplateTest {
     @Test
     @Order(5)
     void testGetStudentsByAge() {
-        Assertions
-                .assertThat(this.testRestTemplate.getForObject("http://localhost:" + localServerPort +
-                        "/student/12", String.class))
-                .isNotNull();
+        Student student1 = studentRepository.save(students.get(0));
+        Student student2 = studentRepository.save(students.get(1));
+        Student student3 = studentRepository.save(students.get(2));
+
+        ResponseEntity<List<Student>> studentsAge10 = testRestTemplate.exchange("http://localhost:" + localServerPort +
+                "/student/age?age=10", HttpMethod.GET, null, new ParameterizedTypeReference<List<Student>>() {});
+        ResponseEntity<List<Student>> studentsAge15 = testRestTemplate.exchange("http://localhost:" + localServerPort +
+                "/student/age?age=15", HttpMethod.GET, null, new ParameterizedTypeReference<List<Student>>() {});
+        ResponseEntity<List<Student>> studentsAge20 = testRestTemplate.exchange("http://localhost:" + localServerPort +
+                "/student/age?age=20", HttpMethod.GET, null, new ParameterizedTypeReference<List<Student>>() {});
+
+        Assertions.assertThat(studentsAge10.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(Objects.requireNonNull(studentsAge10.getBody()).size()).isEqualTo(1);
+        Assertions.assertThat(Objects.requireNonNull(studentsAge10.getBody()).get(0).getName()).isEqualTo(student1.getName());
+
+        Assertions.assertThat(studentsAge15.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(Objects.requireNonNull(studentsAge15.getBody()).size()).isEqualTo(1);
+        Assertions.assertThat(Objects.requireNonNull(studentsAge15.getBody()).get(0).getName()).isEqualTo(student2.getName());
+
+        Assertions.assertThat(studentsAge20.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(Objects.requireNonNull(studentsAge20.getBody()).size()).isEqualTo(1);
+        Assertions.assertThat(Objects.requireNonNull(studentsAge20.getBody()).get(0).getName()).isEqualTo(student3.getName());
     }
+
 
     @Test
     @Order(6)

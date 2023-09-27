@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -19,6 +20,8 @@ import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
 import ru.hogwarts.school.repository.StudentRepository;
+import ru.hogwarts.school.service.FacultyService;
+import ru.hogwarts.school.service.StudentService;
 
 import java.util.*;
 
@@ -37,10 +40,11 @@ class FacultyControllerRestTemplateTest {
     @Autowired
     private TestRestTemplate testRestTemplate;
     private static List<Faculty> faculties;
+    private static List<Student> students;
     private static Long facultyId;
 
-    @BeforeAll
-    public static void setup() {
+    @BeforeEach
+    public void setup() {
 
         faculties = new ArrayList<>();
         Faculty faculty1 = new Faculty();
@@ -52,13 +56,29 @@ class FacultyControllerRestTemplateTest {
         faculty2.setName("TestFaculty2");
         faculty2.setColor("TestColor2");
         faculties.add(faculty2);
+
+        students = new ArrayList<>();
+        Student student1 = new Student();
+        student1.setName("TestStudent1");
+        student1.setAge(15);
+        student1.setFaculty(faculty1);
+        students.add(student1);
+
+        Student student2 = new Student();
+        student2.setName("TestStudent2");
+        student2.setAge(16);
+        student2.setFaculty(faculty2);
+        students.add(student2);
     }
 
     @AfterEach
     public void cleanup() {
-        for (Faculty faculty : faculties) {
-            facultyRepository.delete(faculty);
-        }
+        studentRepository.findAll().forEach(student -> {
+            student.setFaculty(null);
+            studentRepository.save(student);
+        });
+        studentRepository.deleteAll();
+        facultyRepository.deleteAll();
     }
 
     @Test
@@ -69,9 +89,7 @@ class FacultyControllerRestTemplateTest {
     @Test
     @Order(1)
     public void testAddFaculty() throws Exception {
-        Faculty testFaculty = new Faculty();
-        testFaculty.setName("TestFaculty");
-        testFaculty.setColor("TestColor");
+        Faculty testFaculty = faculties.get(0);
 
         Faculty savedTestFaculty = this.testRestTemplate.postForObject("http://localhost:" + localServerPort +
                 "/faculty", testFaculty, Faculty.class);
@@ -80,57 +98,62 @@ class FacultyControllerRestTemplateTest {
         Assertions.assertThat(savedTestFaculty.getName()).isEqualTo(testFaculty.getName());
         Assertions.assertThat(savedTestFaculty.getColor()).isEqualTo(testFaculty.getColor());
 
-        facultyId = savedTestFaculty.getId();
     }
-
 
     @Test
     @Order(2)
     void testFindFaculty() throws JsonProcessingException {
+        Faculty faculty1 = facultyRepository.save(faculties.get(0));
+        Faculty faculty2 = facultyRepository.save(faculties.get(1));
+
         ObjectMapper objectMapper = new ObjectMapper();
-        String response = this.testRestTemplate.getForObject("http://localhost:" +
-                localServerPort + "/faculty/" + facultyId, String.class);
+        String response1 = this.testRestTemplate.getForObject("http://localhost:" +
+                localServerPort + "/faculty/" + faculty1.getId(), String.class);
 
-        Assertions.assertThat(response).isNotNull();
+        String response2 = this.testRestTemplate.getForObject("http://localhost:" +
+                localServerPort + "/faculty/" + faculty2.getId(), String.class);
 
-        Faculty faculty = objectMapper.readValue(response, Faculty.class);
-        Assertions.assertThat(faculty).isNotNull();
-        Assertions.assertThat(faculty.getId()).isEqualTo(facultyId);
-        Assertions.assertThat(faculty.getName()).isEqualTo("TestFaculty");
-        Assertions.assertThat(faculty.getColor()).isEqualTo("TestColor");
+        Assertions.assertThat(response1).isNotNull();
+        Assertions.assertThat(response2).isNotNull();
+
+        Faculty getFaculty1 = objectMapper.readValue(response1, Faculty.class);
+        Faculty getFaculty2 = objectMapper.readValue(response2, Faculty.class);
+        Assertions.assertThat(getFaculty1).isNotNull();
+        Assertions.assertThat(getFaculty2).isNotNull();
+        Assertions.assertThat(getFaculty1.getId()).isEqualTo(faculty1.getId());
+        Assertions.assertThat(getFaculty2.getId()).isEqualTo(faculty2.getId());
+        Assertions.assertThat(getFaculty1.getName()).isEqualTo("TestFaculty1");
+        Assertions.assertThat(getFaculty2.getName()).isEqualTo("TestFaculty2");
+        Assertions.assertThat(getFaculty1.getColor()).isEqualTo("TestColor1");
+        Assertions.assertThat(getFaculty2.getColor()).isEqualTo("TestColor2");
     }
-
 
     @Test
     @Order(3)
     void testUpdateFaculty() {
-        if (facultyId == null) {
-            throw new ElementNotExistException("Такого факультета нет.");
-        }
+        Faculty faculty1 = facultyRepository.save(faculties.get(0));
 
-        Faculty updatedFaculty = new Faculty();
-        updatedFaculty.setId(facultyId);
-        updatedFaculty.setName("UpdatedFaculty");
-        updatedFaculty.setColor("UpdatedColor");
+        Faculty updatedFaculty = faculties.get(0);
+        updatedFaculty.setId(faculty1.getId());
+        updatedFaculty.setName("UpdatedFaculty1");
+        updatedFaculty.setColor("UpdatedColor1");
 
         ResponseEntity<Faculty> response = this.testRestTemplate.exchange("http://localhost:" +
                 localServerPort + "/faculty", HttpMethod.PUT, new HttpEntity<>(updatedFaculty), Faculty.class);
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(Objects.requireNonNull(response.getBody()).getName()).isEqualTo("UpdatedFaculty");
-        Assertions.assertThat(response.getBody().getColor()).isEqualTo("UpdatedColor");
+        Assertions.assertThat(Objects.requireNonNull(response.getBody()).getName()).isEqualTo("UpdatedFaculty1");
+        Assertions.assertThat(response.getBody().getColor()).isEqualTo("UpdatedColor1");
     }
 
     @Test
     @Order(4)
     void TestRemoveFaculty() {
-        if (facultyId == null) {
-            throw new ElementNotExistException("Такого факультета нет.");
-        }
+        Faculty faculty = facultyRepository.save(faculties.get(0));
 
-        this.testRestTemplate.delete("http://localhost:" + localServerPort + "/faculty/" + facultyId);
+        this.testRestTemplate.delete("http://localhost:" + localServerPort + "/faculty/" + faculty.getId());
 
-        Optional<Faculty> deletedFaculty = facultyRepository.findById(facultyId);
+        Optional<Faculty> deletedFaculty = facultyRepository.findById(faculty.getId());
         Assertions.assertThat(deletedFaculty).isEmpty();
     }
 
@@ -150,18 +173,13 @@ class FacultyControllerRestTemplateTest {
         Assertions.assertThat(response.getBody().get(0).getColor()).isEqualTo("TestColor1");
     }
 
-
     @Test
     @Order(6)
     void testFindByNameIgnoreCaseOrColorIgnoreCase() {
 
-        Faculty testFaculty1 = new Faculty();
-        testFaculty1.setName("TestFaculty1");
-        testFaculty1.setColor("TestColor1");
+        Faculty testFaculty1 = faculties.get(0);
         facultyRepository.save(testFaculty1);
-        Faculty testFaculty2 = new Faculty();
-        testFaculty2.setName("TestFaculty2");
-        testFaculty2.setColor("TestColor2");
+        Faculty testFaculty2 = faculties.get(1);
         facultyRepository.save(testFaculty2);
 
         ResponseEntity<List<Faculty>> responseName = this.testRestTemplate.exchange("http://localhost:" +
@@ -187,18 +205,14 @@ class FacultyControllerRestTemplateTest {
     @Order(7)
     void testGetStudentsOfFaculty() {
 
-        Faculty testFaculty = new Faculty();
-        testFaculty.setName("TestFacultyStudents");
-        testFaculty.setColor("TestColorStudents");
+        Faculty testFaculty = faculties.get(0);
         Faculty savedTestFaculty = facultyRepository.save(testFaculty);
 
-        Student student1 = new Student();
-        student1.setName("TestStudent1");
+        Student student1 = students.get(0);
         student1.setFaculty(savedTestFaculty);
         studentRepository.save(student1);
 
-        Student student2 = new Student();
-        student2.setName("TestStudent2");
+        Student student2 = students.get(1);
         student2.setFaculty(savedTestFaculty);
         studentRepository.save(student2);
 
@@ -218,4 +232,44 @@ class FacultyControllerRestTemplateTest {
         studentRepository.delete(student2);
         facultyRepository.delete(savedTestFaculty);
     }
+
+    @Test
+    @Order(8)
+    public void testAddStudentToFaculty() {
+
+        Faculty faculty = facultyRepository.save(faculties.get(0));
+        Student newStudent = students.get(0);
+
+        Student savedTestStudent = this.testRestTemplate.postForObject("http://localhost:" + localServerPort + "/faculty/" + faculty.getId() + "/students",
+                newStudent, Student.class);
+
+        Assertions.assertThat(savedTestStudent).isNotNull();
+        Assertions.assertThat(savedTestStudent.getName()).isEqualTo(newStudent.getName());
+        Assertions.assertThat(savedTestStudent.getAge()).isEqualTo(newStudent.getAge());
+        Assertions.assertThat(savedTestStudent.getFaculty().getId()).isEqualTo(newStudent.getFaculty().getId());
+    }
+
+    @Test
+    @Order(9)
+    public void testChangeStudentFaculty() {
+        Faculty testFaculty1 = faculties.get(0);
+        Faculty savedTestFaculty1 = facultyRepository.save(testFaculty1);
+
+        Faculty testFaculty2 = faculties.get(1);
+        Faculty savedTestFaculty2 = facultyRepository.save(testFaculty2);
+
+        Student student = students.get(0);
+        student.setFaculty(savedTestFaculty1);
+        studentRepository.save(student);
+
+        this.testRestTemplate.put("http://localhost:" + localServerPort + "/faculty/" + savedTestFaculty2.getId() +
+                        "/students/" + student.getId(), student);
+
+        Optional<Student> updatedStudentOpt = studentRepository.findById(student.getId());
+        Assertions.assertThat(updatedStudentOpt).isPresent();
+        Student updatedStudent = updatedStudentOpt.get();
+        Assertions.assertThat(updatedStudent.getFaculty()).isNotNull();
+        Assertions.assertThat(updatedStudent.getFaculty().getId()).isEqualTo(savedTestFaculty2.getId());
+    }
+
 }

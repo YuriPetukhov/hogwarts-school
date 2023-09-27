@@ -6,7 +6,6 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity(name = "students")
-@JsonIgnoreProperties({"faculty"})
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

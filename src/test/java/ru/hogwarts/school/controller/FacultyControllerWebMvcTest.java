@@ -13,7 +13,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
+import ru.hogwarts.school.repository.StudentRepository;
 import ru.hogwarts.school.service.FacultyServiceImpl;
+import ru.hogwarts.school.service.StudentServiceImpl;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -29,8 +31,12 @@ class FacultyControllerWebMvcTest {
     private MockMvc mockMvc;
     @MockBean
     private FacultyRepository facultyRepository;
+    @MockBean
+    private StudentRepository studentRepository;
     @SpyBean
     private FacultyServiceImpl facultyService;
+    @SpyBean
+    private StudentServiceImpl studentService;
     private FacultyController facultyController;
 
     @Test
@@ -106,14 +112,15 @@ class FacultyControllerWebMvcTest {
         when(facultyRepository.existsById(id)).thenReturn(true);
         doNothing().when(facultyRepository).deleteById(id);
 
-        String expectedSuccessMessage = "The faculty has been successfully removed.";
+        String expectedSuccessMessage = "Факультет успешно удален.";
 
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/faculty/" + id)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())
                 .andExpect(content().string(expectedSuccessMessage));
     }
+
 
     @Test
     void getFacultyByColor() throws Exception {

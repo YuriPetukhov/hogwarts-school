@@ -51,7 +51,7 @@ public class FacultyController {
     public ResponseEntity<String> removeFaculty(@PathVariable Long id) {
         try {
             service.removeFaculty(id);
-            return ResponseEntity.ok("The faculty has been successfully removed.");
+            return ResponseEntity.ok("Факультет успешно удален.");
         } catch (ElementNotExistException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
@@ -88,5 +88,16 @@ public class FacultyController {
                     .headers(headers)
                     .body(faculty.getStudents());
         }
+    }
+    @PostMapping("/{facultyId}/students")
+    public ResponseEntity<Student> addStudentToFaculty(@PathVariable Long facultyId, @RequestBody Student newStudent) {
+        Student savedStudent = service.addStudentToFaculty(facultyId, newStudent);
+        return new ResponseEntity<>(savedStudent, HttpStatus.CREATED);
+    }
+    @RequestMapping(value = "/{facultyId}/students/{studentId}", method = RequestMethod.PUT)
+    public ResponseEntity<?> changeStudentFaculty(@PathVariable("facultyId") Long facultyId,
+                                                  @PathVariable("studentId") Long studentId) {
+        Student updatedStudent = service.changeStudentFaculty(studentId, facultyId);
+        return ResponseEntity.ok(updatedStudent);
     }
 }
