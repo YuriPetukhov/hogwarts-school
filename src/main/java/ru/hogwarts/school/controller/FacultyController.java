@@ -1,5 +1,6 @@
 package ru.hogwarts.school.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,13 +15,10 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/faculty")
 public class FacultyController {
     private final FacultyService service;
-
-    public FacultyController(FacultyService service) {
-        this.service = service;
-    }
 
     @PostMapping
     public Faculty addFaculty(@RequestBody Faculty faculty) {
