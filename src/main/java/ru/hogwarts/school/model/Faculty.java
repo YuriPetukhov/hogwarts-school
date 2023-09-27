@@ -12,7 +12,6 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "faculties")
-@JsonIgnoreProperties({"students", "faculty"})
 public class Faculty {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +20,7 @@ public class Faculty {
     private String color;
 
     @OneToMany(mappedBy = "faculty")
+    @ToString.Exclude
     private List<Student> students;
 
     @Override

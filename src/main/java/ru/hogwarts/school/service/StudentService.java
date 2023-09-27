@@ -1,14 +1,16 @@
 package ru.hogwarts.school.service;
 
+import ru.hogwarts.school.dto.StudentDTO;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface StudentService {
     Student addStudent(Student student);
 
-    Student findStudent(Long id);
+    Optional<Student> findStudent(Long id);
 
     Student updateStudent(Student student);
 

@@ -4,12 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.hogwarts.school.dto.FacultyDTO;
+import ru.hogwarts.school.dto.StudentDTO;
 import ru.hogwarts.school.exception.ElementNotExistException;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
 
 import java.util.List;
+
+import static ru.hogwarts.school.dto.StudentDTO.mapStudentsToDtoList;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,28 +22,24 @@ public class StudentController {
     private final StudentService studentService;
 
     @PostMapping
-    public Student addStudent(@RequestBody Student student) {
-        return studentService.addStudent(student);
+    public ResponseEntity<StudentDTO> addStudent(@RequestBody StudentDTO studentDTO) {
+        Student student = studentService.addStudent(studentDTO.toEntity());
+        return ResponseEntity.status(HttpStatus.CREATED).body(StudentDTO.fromEntity(student));
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Student> findStudent(@PathVariable Long id) {
-        Student foundStudent = studentService.findStudent(id);
-        if (foundStudent == null) {
-            throw new ElementNotExistException("Студент не найден");
-        } else {
-            return ResponseEntity.ok(foundStudent);
-        }
+    public ResponseEntity<StudentDTO> findStudent(@PathVariable Long id) {
+        Student student = studentService.findStudent(id)
+                .orElseThrow(() ->
+                        new ElementNotExistException("Такого студента нет в базе"));
+        StudentDTO studentDTO = StudentDTO.fromEntity(student);
+        return ResponseEntity.ok(studentDTO);
     }
 
     @PutMapping
-    public ResponseEntity<Student> updateStudent(@RequestBody Student student) {
-        Student updatedStudent = studentService.updateStudent(student);
-        if (updatedStudent == null) {
-            throw new ElementNotExistException("Не получилось внести изменения");
-        } else {
-            return ResponseEntity.ok(updatedStudent);
-        }
+    public ResponseEntity<StudentDTO> updateStudent(@RequestBody StudentDTO studentDTO) {
+        Student student = studentService.updateStudent(studentDTO.toEntity());
+        return ResponseEntity.status(HttpStatus.OK).body(StudentDTO.fromEntity(student));
     }
 
     @DeleteMapping("{id}")
@@ -49,16 +49,18 @@ public class StudentController {
     }
 
     @GetMapping("/age")
-    public ResponseEntity<List<Student>> getStudentsByAge(
+    public ResponseEntity<List<StudentDTO>> getStudentsByAge(
             @RequestParam(required = false) Integer age) {
         if (age == null) {
             throw new ElementNotExistException("Не указан параметр age");
         }
-        return ResponseEntity.ok(studentService.getStudentsByAge(age));
+        List<Student> students = studentService.getStudentsByAge(age);
+        List<StudentDTO> studentsDto = mapStudentsToDtoList(students);
+        return ResponseEntity.ok(studentsDto);
     }
 
     @GetMapping("/age-range")
-    public ResponseEntity<List<Student>> findByAgeBetween(
+    public ResponseEntity<List<StudentDTO>> findByAgeBetween(
             @RequestParam(required = false) Integer min,
             @RequestParam(required = false) Integer max) {
         if (min == null || max == null) {
@@ -66,17 +68,18 @@ public class StudentController {
         } else if (min >= max) {
             throw new ElementNotExistException("Неправильные параметры диапазона");
         }
-        return ResponseEntity.ok(studentService.findByAgeBetween(min, max));
+        List<Student> students = studentService.findByAgeBetween(min, max);
+        List<StudentDTO> studentsDto = mapStudentsToDtoList(students);
+        return ResponseEntity.ok(studentsDto);
     }
 
     @GetMapping("{studentId}/faculty")
-    public ResponseEntity<Faculty> getFacultyOfStudent(@PathVariable("studentId") Long id) {
+    public ResponseEntity<FacultyDTO> getFacultyOfStudent(@PathVariable("studentId") Long id) {
         Faculty faculty = studentService.getFacultyOfStudent(id);
-
         if (faculty == null) {
-            throw new ElementNotExistException("Факультет не найден");
+            throw new ElementNotExistException("У студента нет факультета");
         } else {
-            return ResponseEntity.ok(faculty);
+            return ResponseEntity.ok(FacultyDTO.fromEntity(faculty));
         }
     }
 }

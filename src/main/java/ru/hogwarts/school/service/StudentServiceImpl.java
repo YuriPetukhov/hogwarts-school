@@ -8,20 +8,25 @@ import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.List;
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Service
 public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
 
+
     @Override
     public Student addStudent(Student student) {
-        return studentRepository.save(student);
+        if (!isValidStudent(student)) {
+            throw new IllegalArgumentException("Неверные данные");
+        }
+                return studentRepository.save(student);
     }
 
     @Override
-    public Student findStudent(Long id) {
-        return studentRepository.findById(id)
-                .orElseThrow(() -> new ElementNotExistException("Такого студента нет в базе"));
+    public Optional<Student> findStudent(Long id) {
+        return studentRepository.findById(id);
     }
 
     @Override
@@ -55,5 +60,8 @@ public class StudentServiceImpl implements StudentService {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ElementNotExistException("Такого студента нет в базе"));
         return student.getFaculty();
+    }
+    private boolean isValidStudent(Student student) {
+        return student.getName() != null && student.getAge() >= 20;
     }
 }

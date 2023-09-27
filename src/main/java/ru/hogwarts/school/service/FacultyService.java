@@ -18,7 +18,7 @@ public interface FacultyService {
     List<Faculty> getFacultyByColor(String color);
 
     List<Faculty> findByNameIgnoreCaseOrColorIgnoreCase(String name, String color);
-    Student addStudentToFaculty(Long facultyId, Student newStudent);
-    public Student changeStudentFaculty(Long studentId, Long facultyId);
+    List<Student> getStudentsOfFaculty(Long id);
+    Student changeStudentFaculty(Long studentId, Long facultyId);
 
 }

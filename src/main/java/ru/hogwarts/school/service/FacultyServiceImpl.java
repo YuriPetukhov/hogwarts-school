@@ -8,67 +8,64 @@ import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
 
 import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class FacultyServiceImpl implements FacultyService {
 
-    private final FacultyRepository repository;
+    private final FacultyRepository facultyRepository;
     private final StudentService studentService;
     @Override
     public Faculty addFaculty(Faculty faculty) {
-        return repository.save(faculty);
+        return facultyRepository.save(faculty);
     }
 
     @Override
     public Faculty findFaculty(Long id) {
-        return repository.findById(id)
+        return facultyRepository.findById(id)
                 .orElseThrow(() -> new ElementNotExistException("Такого факультета нет в базе"));
     }
 
     @Override
     public Faculty updateFaculty(Faculty faculty) {
-        if (!repository.existsById(faculty.getId())) {
+        if (!facultyRepository.existsById(faculty.getId())) {
             throw new ElementNotExistException("Такого факультета нет в базе");
         }
-        return repository.save(faculty);
+        return facultyRepository.save(faculty);
     }
 
     @Override
     public void removeFaculty(long id) {
-        if (!repository.existsById(id)) {
+        if (!facultyRepository.existsById(id)) {
             throw new ElementNotExistException("Такого факультета нет в базе");
         }
-        repository.deleteById(id);
+        facultyRepository.deleteById(id);
     }
 
     @Override
     public List<Faculty> getFacultyByColor(String color) {
-        return repository.findAllByColor(color);
+        return facultyRepository.findAllByColor(color);
     }
 
     @Override
     public List<Faculty> findByNameIgnoreCaseOrColorIgnoreCase(String name, String color) {
-        return repository.findByNameIgnoreCaseOrColorIgnoreCase(name, color);
+        return facultyRepository.findByNameIgnoreCaseOrColorIgnoreCase(name, color);
     }
     @Override
-    public Student addStudentToFaculty(Long facultyId, Student newStudent) {
-        Faculty faculty = repository.findById(facultyId)
-                .orElseThrow(() -> new RuntimeException("Faculty not found with id: " + facultyId));
-
-        newStudent.setFaculty(faculty);
-
-        Student savedStudent =  studentService.addStudent(newStudent);
-        savedStudent.setFaculty(faculty);
-        return studentService.updateStudent(savedStudent);
+    public List<Student> getStudentsOfFaculty(Long id){
+        Faculty faculty = facultyRepository.findById(id)
+                .orElseThrow(() -> new ElementNotExistException("Такого факультета нет в базе"));
+        return faculty.getStudents();
     }
+
     @Override
     public Student changeStudentFaculty(Long studentId, Long facultyId) {
-        Student student = studentService.findStudent(studentId);
-        Faculty faculty = repository.findById(facultyId)
-                .orElseThrow(() -> new RuntimeException("Faculty not found with id: " + facultyId));
+        Student student = studentService.findStudent(studentId)
+                .orElseThrow(() -> new ElementNotExistException("Такого факультета нет в базе"));
+        Faculty faculty = facultyRepository.findById(facultyId)
+                .orElseThrow(() -> new ElementNotExistException("Такого факультета нет в базе"));
 
         student.setFaculty(faculty);
-
-        return studentService.addStudent(student);
+        return studentService.updateStudent(student);
     }
 }

@@ -1,101 +1,83 @@
 package ru.hogwarts.school.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.hogwarts.school.dto.FacultyDTO;
+import ru.hogwarts.school.dto.StudentDTO;
 import ru.hogwarts.school.exception.ElementNotExistException;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.FacultyService;
 
 import java.util.List;
-import java.util.Set;
+
+import static ru.hogwarts.school.dto.FacultyDTO.mapFacultiesToDtoList;
+import static ru.hogwarts.school.dto.StudentDTO.mapStudentsToDtoList;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/faculty")
 public class FacultyController {
-    private final FacultyService service;
+    private final FacultyService facultyService;
 
     @PostMapping
-    public Faculty addFaculty(@RequestBody Faculty faculty) {
-        return service.addFaculty(faculty);
+    public ResponseEntity<FacultyDTO> addFaculty(@RequestBody FacultyDTO facultyDTO) {
+        Faculty faculty = facultyService.addFaculty(facultyDTO.toEntity());
+        return ResponseEntity.status(HttpStatus.CREATED).body(FacultyDTO.fromEntity(faculty));
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Faculty> findFaculty(@PathVariable Long id) {
-        Faculty foundFaculty = service.findFaculty(id);
-        if (foundFaculty == null) {
-            return ResponseEntity.notFound().build();
-        } else {
-            return ResponseEntity.ok(foundFaculty);
-        }
+    public ResponseEntity<FacultyDTO> findFaculty(@PathVariable Long id) {
+        Faculty foundFaculty = facultyService.findFaculty(id);
+        FacultyDTO ffoundFacultyDTO = FacultyDTO.fromEntity(foundFaculty);
+            return ResponseEntity.ok(ffoundFacultyDTO);
     }
 
     @PutMapping
-    public ResponseEntity<Faculty> updateFaculty(@RequestBody Faculty faculty) {
-        try {
-            Faculty updatedFaculty = service.updateFaculty(faculty);
-            return ResponseEntity.ok(updatedFaculty);
-        } catch (ElementNotExistException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<FacultyDTO> updateFaculty(@RequestBody FacultyDTO facultyDTO) {
+            Faculty updatedFaculty = facultyService.updateFaculty(facultyDTO.toEntity());
+            return ResponseEntity.status(HttpStatus.OK).body(FacultyDTO.fromEntity(updatedFaculty));
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<String> removeFaculty(@PathVariable Long id) {
-        try {
-            service.removeFaculty(id);
-            return ResponseEntity.ok("Факультет успешно удален.");
-        } catch (ElementNotExistException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        }
+    @DeleteMapping("/{id}")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void removeFaculty(@PathVariable Long id) {
+        facultyService.removeFaculty(id);
     }
 
     @GetMapping("/color")
-    public List<Faculty> getFacultyByColor(@RequestParam String color) {
-        return service.getFacultyByColor(color);
+    public ResponseEntity<List<FacultyDTO>> getFacultyByColor(@RequestParam(required = false) String color) {
+        if (color == null) {
+            throw new ElementNotExistException("Не указан параметр color");
+        }
+        List<Faculty> faculties = facultyService.getFacultyByColor(color);
+        List<FacultyDTO> facultyDTOS = mapFacultiesToDtoList(faculties);
+        return ResponseEntity.ok(facultyDTOS);
     }
 
     @GetMapping
-    public ResponseEntity<List<Faculty>> findByNameIgnoreCaseOrColorIgnoreCase(
+    public ResponseEntity<List<FacultyDTO>> findByNameIgnoreCaseOrColorIgnoreCase(
             @RequestParam String nameOrColor) {
-        List<Faculty> faculties = service.findByNameIgnoreCaseOrColorIgnoreCase(nameOrColor, nameOrColor);
-
-        if (faculties.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        } else {
-            return ResponseEntity.ok(faculties);
-        }
+        List<Faculty> faculties = facultyService.findByNameIgnoreCaseOrColorIgnoreCase(nameOrColor, nameOrColor);
+        List<FacultyDTO> facultyDTOS = mapFacultiesToDtoList(faculties);
+            return ResponseEntity.ok(facultyDTOS);
     }
 
     @GetMapping("{id}/students")
-    public ResponseEntity<List<Student>> getStudentsOfFaculty(@PathVariable Long id) {
-        Faculty faculty = service.findFaculty(id);
-
-        if (faculty == null) {
-            return ResponseEntity.notFound().build();
-        } else {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .body(faculty.getStudents());
-        }
+    public ResponseEntity<List<StudentDTO>> getStudentsOfFaculty(@PathVariable Long id) {
+        List<Student> students = facultyService.getStudentsOfFaculty(id);
+        List<StudentDTO> studentDTOS = mapStudentsToDtoList(students);
+        return ResponseEntity.ok(studentDTOS);
     }
-    @PostMapping("/{facultyId}/students")
-    public ResponseEntity<Student> addStudentToFaculty(@PathVariable Long facultyId, @RequestBody Student newStudent) {
-        Student savedStudent = service.addStudentToFaculty(facultyId, newStudent);
-        return new ResponseEntity<>(savedStudent, HttpStatus.CREATED);
-    }
+
     @RequestMapping(value = "/{facultyId}/students/{studentId}", method = RequestMethod.PUT)
-    public ResponseEntity<?> changeStudentFaculty(@PathVariable("facultyId") Long facultyId,
-                                                  @PathVariable("studentId") Long studentId) {
-        Student updatedStudent = service.changeStudentFaculty(studentId, facultyId);
-        return ResponseEntity.ok(updatedStudent);
+    public ResponseEntity<StudentDTO> changeStudentFaculty(
+            @PathVariable("facultyId") Long facultyId,
+            @PathVariable("studentId") Long studentId) {
+        Student updatedStudent = facultyService.changeStudentFaculty(studentId, facultyId);
+        StudentDTO updatedStudentDTO = StudentDTO.fromEntity(updatedStudent);
+        return ResponseEntity.ok(updatedStudentDTO);
     }
 }
