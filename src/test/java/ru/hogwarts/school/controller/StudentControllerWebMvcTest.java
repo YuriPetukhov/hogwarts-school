@@ -12,10 +12,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.repository.FacultyRepository;
 import ru.hogwarts.school.repository.StudentRepository;
+import ru.hogwarts.school.service.FacultyServiceImpl;
 import ru.hogwarts.school.service.StudentServiceImpl;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -30,8 +34,12 @@ class StudentControllerWebMvcTest {
     private MockMvc mockMvc;
     @MockBean
     private StudentRepository studentRepository;
+    @MockBean
+    private FacultyRepository facultyRepository;
     @SpyBean
     private StudentServiceImpl studentService;
+    @SpyBean
+    private FacultyServiceImpl facultyService;
     private StudentController studentController;
 
     @Test
@@ -39,6 +47,17 @@ class StudentControllerWebMvcTest {
         final Long id = 1L;
         final String name = "Student1";
         final int age = 24;
+
+        final Long facultyId = 2L;
+        final String facultyName = "Faculty2";
+        final String facultyColor = "Color2";
+
+        final Faculty faculty = new Faculty();
+        faculty.setName(facultyName);
+        faculty.setId(facultyId);
+        faculty.setColor(facultyColor);
+        final List<Faculty> faculties = new ArrayList<>();
+        faculties.add(faculty);
 
         JSONObject studentObject = new JSONObject();
         studentObject.put("name", name);
@@ -48,10 +67,12 @@ class StudentControllerWebMvcTest {
         student1.setId(id);
         student1.setName(name);
         student1.setAge(age);
+        student1.setFaculty(faculty);
 
 
         when(studentRepository.save(any(Student.class))).thenReturn(student1);
         when(studentRepository.findById(any(Long.class))).thenReturn(Optional.of(student1));
+        when(facultyRepository.findAll()).thenReturn(faculties);
 
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -62,7 +83,8 @@ class StudentControllerWebMvcTest {
                 .andExpect(status().is(201))
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.name").value(name))
-                .andExpect(jsonPath("$.age").value(age));
+                .andExpect(jsonPath("$.age").value(age))
+                .andExpect(jsonPath("$.facultyId").value(facultyId));
 
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/student/" + id)

@@ -232,28 +232,4 @@ class FacultyControllerRestTemplateTest {
         studentRepository.delete(student2);
         facultyRepository.delete(savedTestFaculty);
     }
-
-    @Test
-    @Order(8)
-    public void testChangeStudentFaculty() {
-        Faculty testFaculty1 = faculties.get(0);
-        Faculty savedTestFaculty1 = facultyRepository.save(testFaculty1);
-
-        Faculty testFaculty2 = faculties.get(1);
-        Faculty savedTestFaculty2 = facultyRepository.save(testFaculty2);
-
-        Student student = students.get(0);
-        student.setFaculty(savedTestFaculty1);
-        studentRepository.save(student);
-
-        this.testRestTemplate.put("http://localhost:" + localServerPort + "/faculty/" + savedTestFaculty2.getId() +
-                        "/students/" + student.getId(), student);
-
-        Optional<Student> updatedStudentOpt = studentRepository.findById(student.getId());
-        Assertions.assertThat(updatedStudentOpt).isPresent();
-        Student updatedStudent = updatedStudentOpt.get();
-        Assertions.assertThat(updatedStudent.getFaculty()).isNotNull();
-        Assertions.assertThat(updatedStudent.getFaculty().getId()).isEqualTo(savedTestFaculty2.getId());
-    }
-
 }

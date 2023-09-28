@@ -8,13 +8,14 @@ import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class FacultyServiceImpl implements FacultyService {
 
     private final FacultyRepository facultyRepository;
-    private final StudentService studentService;
+
     @Override
     public Faculty addFaculty(Faculty faculty) {
         return facultyRepository.save(faculty);
@@ -59,13 +60,12 @@ public class FacultyServiceImpl implements FacultyService {
     }
 
     @Override
-    public Student changeStudentFaculty(Long studentId, Long facultyId) {
-        Student student = studentService.findStudent(studentId)
-                .orElseThrow(() -> new ElementNotExistException("Такого факультета нет в базе"));
-        Faculty faculty = facultyRepository.findById(facultyId)
-                .orElseThrow(() -> new ElementNotExistException("Такого факультета нет в базе"));
+    public List<Faculty> findAll() {
+        return facultyRepository.findAll();
+    }
 
-        student.setFaculty(faculty);
-        return studentService.updateStudent(student);
+    @Override
+    public Optional<Faculty> findById(Long id) {
+        return facultyRepository.findById(id);
     }
 }

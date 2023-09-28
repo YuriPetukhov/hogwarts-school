@@ -73,13 +73,4 @@ public class FacultyController {
         List<StudentDTO> studentDTOS = mapStudentsToDtoList(students);
         return ResponseEntity.ok(studentDTOS);
     }
-
-    @PutMapping(value = "/{facultyId}/students/{studentId}")
-    public ResponseEntity<StudentDTO> changeStudentFaculty(
-            @PathVariable("facultyId") Long facultyId,
-            @PathVariable("studentId") Long studentId) {
-        Student updatedStudent = facultyService.changeStudentFaculty(studentId, facultyId);
-        StudentDTO updatedStudentDTO = StudentDTO.fromEntity(updatedStudent);
-        return ResponseEntity.ok(updatedStudentDTO);
-    }
 }

@@ -21,4 +21,6 @@ public interface StudentService {
     List<Student> findByAgeBetween(int min, int max);
 
     Faculty getFacultyOfStudent(Long id);
+
+    Faculty selectRandomFaculty();
 }

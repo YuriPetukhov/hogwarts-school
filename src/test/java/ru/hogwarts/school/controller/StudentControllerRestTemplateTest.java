@@ -38,10 +38,30 @@ class StudentControllerRestTemplateTest {
     @Autowired
     private TestRestTemplate testRestTemplate;
     private static List<Student> students;
+    private static List<Faculty> faculties;
     private static Long studentId;
 
     @BeforeEach
     public void setup() {
+
+        faculties = new ArrayList<>();
+        Faculty faculty1 = new Faculty();
+        faculty1.setId(1L);
+        faculty1.setName("Faculty1");
+        faculty1.setColor("Color1");
+        faculties.add(faculty1);
+
+        Faculty faculty2 = new Faculty();
+        faculty2.setId(2L);
+        faculty2.setName("Faculty2");
+        faculty2.setColor("Color2");
+        faculties.add(faculty2);
+
+        Faculty faculty3 = new Faculty();
+        faculty3.setId(3L);
+        faculty3.setName("Faculty3");
+        faculty3.setColor("Color3");
+        faculties.add(faculty3);
 
         students = new ArrayList<>();
         Student student1 = new Student();
@@ -58,12 +78,16 @@ class StudentControllerRestTemplateTest {
         student3.setName("Bob");
         student3.setAge(22);
         students.add(student3);
+
     }
 
     @AfterEach
     public void cleanup() {
         for (Student student : students) {
             studentRepository.delete(student);
+        }
+        for (Faculty faculty : faculties) {
+            facultyRepository.delete(faculty);
         }
     }
 
@@ -75,6 +99,7 @@ class StudentControllerRestTemplateTest {
     @Test
     @Order(1)
     public void testAddStudent() throws Exception {
+        facultyRepository.save(faculties.get(0));
         Student testStudent = students.get(0);
 
         Student savedTestStudent = this.testRestTemplate.postForObject("http://localhost:" + localServerPort +
@@ -86,6 +111,7 @@ class StudentControllerRestTemplateTest {
 
         studentId = savedTestStudent.getId();
     }
+
     @Test
     @Order(2)
     void testFindStudent() {
@@ -107,17 +133,18 @@ class StudentControllerRestTemplateTest {
     @Test
     @Order(3)
     void testUpdateStudent() {
-        if (studentId == null) {
-            throw new ElementNotExistException("Такого студента нет в базе.");
-        }
 
-        Student updatedStudent = students.get(0);
-        updatedStudent.setId(studentId);
-        updatedStudent.setName("Mark");
-        updatedStudent.setAge(25);
+        Faculty savedFaculty = facultyRepository.save(faculties.get(0));
+        Student student = students.get(0);
+        Student savedStudent = studentRepository.save(student);
+
+
+        savedStudent.setName("Mark");
+        savedStudent.setAge(25);
+
 
         ResponseEntity<Student> response = this.testRestTemplate.exchange("http://localhost:" + localServerPort +
-                "/student", HttpMethod.PUT, new HttpEntity<>(updatedStudent), Student.class);
+                "/student", HttpMethod.PUT, new HttpEntity<>(savedStudent), Student.class);
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         Assertions.assertThat(Objects.requireNonNull(response.getBody()).getName()).isEqualTo("Mark");
@@ -140,16 +167,20 @@ class StudentControllerRestTemplateTest {
     @Test
     @Order(5)
     void testGetStudentsByAge() {
+        Faculty faculty = facultyRepository.save(faculties.get(0));
         Student student1 = studentRepository.save(students.get(0));
         Student student2 = studentRepository.save(students.get(1));
         Student student3 = studentRepository.save(students.get(2));
 
         ResponseEntity<List<Student>> studentsAge30 = testRestTemplate.exchange("http://localhost:" + localServerPort +
-                "/student/age?age=30", HttpMethod.GET, null, new ParameterizedTypeReference<List<Student>>() {});
+                "/student/age?age=30", HttpMethod.GET, null, new ParameterizedTypeReference<List<Student>>() {
+        });
         ResponseEntity<List<Student>> studentsAge25 = testRestTemplate.exchange("http://localhost:" + localServerPort +
-                "/student/age?age=25", HttpMethod.GET, null, new ParameterizedTypeReference<List<Student>>() {});
+                "/student/age?age=25", HttpMethod.GET, null, new ParameterizedTypeReference<List<Student>>() {
+        });
         ResponseEntity<List<Student>> studentsAge22 = testRestTemplate.exchange("http://localhost:" + localServerPort +
-                "/student/age?age=22", HttpMethod.GET, null, new ParameterizedTypeReference<List<Student>>() {});
+                "/student/age?age=22", HttpMethod.GET, null, new ParameterizedTypeReference<List<Student>>() {
+        });
 
         Assertions.assertThat(studentsAge30.getStatusCode()).isEqualTo(HttpStatus.OK);
         Assertions.assertThat(Objects.requireNonNull(studentsAge30.getBody()).size()).isEqualTo(1);
@@ -168,6 +199,7 @@ class StudentControllerRestTemplateTest {
     @Test
     @Order(6)
     void testFindByAgeBetween() {
+        facultyRepository.save(faculties.get(0));
         for (Student student : students) {
             studentRepository.save(student);
         }

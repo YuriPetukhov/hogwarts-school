@@ -9,19 +9,22 @@ import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @RequiredArgsConstructor
 @Service
 public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
+    private final FacultyService facultyService;
 
 
     @Override
     public Student addStudent(Student student) {
         if (!isValidStudent(student)) {
-            throw new IllegalArgumentException("Неверные данные");
+            throw new ElementNotExistException("Неверные данные");
         }
-                return studentRepository.save(student);
+        student.setFaculty(selectRandomFaculty());
+        return studentRepository.save(student);
     }
 
     @Override
@@ -34,9 +37,15 @@ public class StudentServiceImpl implements StudentService {
         if (!studentRepository.existsById(student.getId())) {
             throw new ElementNotExistException("Такого студента нет в базе");
         }
+
+        if (student.getFaculty() != null && student.getFaculty().getId() != null) {
+            Faculty existingFaculty = facultyService.findById(student.getFaculty().getId())
+                    .orElseThrow(() -> new ElementNotExistException("Факультет не найден"));
+            student.setFaculty(existingFaculty);
+        }
+
         return studentRepository.save(student);
     }
-
     @Override
     public void removeStudent(long id) {
         if (!studentRepository.existsById(id)) {
@@ -60,6 +69,15 @@ public class StudentServiceImpl implements StudentService {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new ElementNotExistException("Такого студента нет в базе"));
         return student.getFaculty();
+    }
+    @Override
+    public Faculty selectRandomFaculty() {
+        List<Faculty> faculties = facultyService.findAll();
+        if (faculties.isEmpty()) {
+            throw new ElementNotExistException("Нет доступных факультетов");
+        }
+        int randomIndex = new Random().nextInt(faculties.size());
+        return faculties.get(randomIndex);
     }
     private boolean isValidStudent(Student student) {
         return student.getName() != null && student.getAge() >= 20;

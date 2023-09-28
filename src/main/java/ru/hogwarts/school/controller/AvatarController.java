@@ -7,7 +7,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.hogwarts.school.dto.AvatarDTO;
 import ru.hogwarts.school.exception.ElementNotExistException;
 import ru.hogwarts.school.model.Avatar;
 import ru.hogwarts.school.service.AvatarService;
@@ -35,24 +34,22 @@ public class AvatarController {
     public ResponseEntity<byte[]> downloadAvatarPreview(@PathVariable Long id) {
         Avatar avatar = avatarService.findAvatar(id)
                 .orElseThrow(() -> new ElementNotExistException("Такого аватара нет в базе"));
-        AvatarDTO avatarDTO = AvatarDTO.fromAvatar(avatar);
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType(avatarDTO.getMediaType()));
-        headers.setContentLength(avatarDTO.getData().length);
-        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(avatarDTO.getData());
+        headers.setContentType(MediaType.parseMediaType(avatar.getMediaType()));
+        headers.setContentLength(avatar.getData().length);
+        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(avatar.getData());
     }
 
     @GetMapping(value = "/{id}/avatar")
     public void downloadAvatar(@PathVariable Long id, HttpServletResponse response) throws IOException {
         Avatar avatar = avatarService.findAvatar(id)
                 .orElseThrow(() -> new ElementNotExistException("Такого аватара нет в базе"));
-        AvatarDTO avatarDTO = AvatarDTO.fromAvatar(avatar);
-        Path path = Path.of(avatarDTO.getFilePath());
+        Path path = Path.of(avatar.getFilePath());
         try (InputStream is = Files.newInputStream(path);
              OutputStream os = response.getOutputStream()) {
             response.setStatus(200);
-            response.setContentType(avatarDTO.getMediaType());
-            response.setContentLength((int) avatarDTO.getFileSize());
+            response.setContentType(avatar.getMediaType());
+            response.setContentLength((int) avatar.getFileSize());
             is.transferTo(os);
         }
     }

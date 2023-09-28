@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.dto.FacultyDTO;
+import ru.hogwarts.school.dto.StudentCreateDTO;
 import ru.hogwarts.school.dto.StudentDTO;
 import ru.hogwarts.school.exception.ElementNotExistException;
 import ru.hogwarts.school.model.Faculty;
@@ -22,8 +23,8 @@ public class StudentController {
     private final StudentService studentService;
 
     @PostMapping
-    public ResponseEntity<StudentDTO> addStudent(@RequestBody StudentDTO studentDTO) {
-        Student student = studentService.addStudent(studentDTO.toEntity());
+    public ResponseEntity<StudentDTO> addStudent(@RequestBody StudentCreateDTO studentCreateDTO) {
+        Student student = studentService.addStudent(studentCreateDTO.toEntity());
         return ResponseEntity.status(HttpStatus.CREATED).body(StudentDTO.fromEntity(student));
     }
 
