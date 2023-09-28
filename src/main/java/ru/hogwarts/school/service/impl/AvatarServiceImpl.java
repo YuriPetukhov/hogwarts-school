@@ -1,4 +1,4 @@
-package ru.hogwarts.school.service;
+package ru.hogwarts.school.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +9,8 @@ import ru.hogwarts.school.exception.ElementNotExistException;
 import ru.hogwarts.school.model.Avatar;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.AvatarRepository;
+import ru.hogwarts.school.service.AvatarService;
+import ru.hogwarts.school.service.StudentService;
 
 import java.io.*;
 import java.nio.file.Files;

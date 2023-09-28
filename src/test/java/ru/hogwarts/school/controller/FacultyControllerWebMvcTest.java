@@ -13,8 +13,8 @@ import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
 import ru.hogwarts.school.repository.StudentRepository;
-import ru.hogwarts.school.service.FacultyServiceImpl;
-import ru.hogwarts.school.service.StudentServiceImpl;
+import ru.hogwarts.school.service.impl.FacultyServiceImpl;
+import ru.hogwarts.school.service.impl.StudentServiceImpl;
 
 import java.util.Collections;
 import java.util.Optional;
