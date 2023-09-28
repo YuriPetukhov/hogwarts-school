@@ -72,7 +72,7 @@ public class FacultyController {
         return ResponseEntity.ok(studentDTOS);
     }
 
-    @RequestMapping(value = "/{facultyId}/students/{studentId}", method = RequestMethod.PUT)
+    @PutMapping(value = "/{facultyId}/students/{studentId}")
     public ResponseEntity<StudentDTO> changeStudentFaculty(
             @PathVariable("facultyId") Long facultyId,
             @PathVariable("studentId") Long studentId) {

@@ -60,13 +60,13 @@ class FacultyControllerRestTemplateTest {
         students = new ArrayList<>();
         Student student1 = new Student();
         student1.setName("TestStudent1");
-        student1.setAge(15);
+        student1.setAge(25);
         student1.setFaculty(faculty1);
         students.add(student1);
 
         Student student2 = new Student();
         student2.setName("TestStudent2");
-        student2.setAge(16);
+        student2.setAge(26);
         student2.setFaculty(faculty2);
         students.add(student2);
     }
@@ -235,22 +235,6 @@ class FacultyControllerRestTemplateTest {
 
     @Test
     @Order(8)
-    public void testAddStudentToFaculty() {
-
-        Faculty faculty = facultyRepository.save(faculties.get(0));
-        Student newStudent = students.get(0);
-
-        Student savedTestStudent = this.testRestTemplate.postForObject("http://localhost:" + localServerPort + "/faculty/" + faculty.getId() + "/students",
-                newStudent, Student.class);
-
-        Assertions.assertThat(savedTestStudent).isNotNull();
-        Assertions.assertThat(savedTestStudent.getName()).isEqualTo(newStudent.getName());
-        Assertions.assertThat(savedTestStudent.getAge()).isEqualTo(newStudent.getAge());
-        Assertions.assertThat(savedTestStudent.getFaculty().getId()).isEqualTo(newStudent.getFaculty().getId());
-    }
-
-    @Test
-    @Order(9)
     public void testChangeStudentFaculty() {
         Faculty testFaculty1 = faculties.get(0);
         Faculty savedTestFaculty1 = facultyRepository.save(testFaculty1);

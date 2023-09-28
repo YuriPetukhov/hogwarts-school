@@ -38,7 +38,7 @@ class StudentControllerWebMvcTest {
     void testAddAndFindStudent() throws Exception {
         final Long id = 1L;
         final String name = "Student1";
-        final int age = 14;
+        final int age = 24;
 
         JSONObject studentObject = new JSONObject();
         studentObject.put("name", name);
@@ -59,7 +59,7 @@ class StudentControllerWebMvcTest {
                         .content(studentObject.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().is(201))
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.name").value(name))
                 .andExpect(jsonPath("$.age").value(age));
@@ -78,7 +78,7 @@ class StudentControllerWebMvcTest {
 
         final Long id = 1L;
         final String updatedName = "Student1 - Updated";
-        final int updatedAge = 15;
+        final int updatedAge = 25;
 
         JSONObject studentObject = new JSONObject();
         studentObject.put("id", id);
@@ -142,12 +142,12 @@ class StudentControllerWebMvcTest {
     @Test
     void testFindByAgeBetween() throws Exception {
 
-        int min = 14;
-        int max = 16;
+        int min = 24;
+        int max = 26;
         Student student1 = new Student();
         student1.setId(1L);
         student1.setName("Student1");
-        student1.setAge(15);
+        student1.setAge(25);
 
         when(studentService.findByAgeBetween(min, max)).thenReturn(Collections.singletonList(student1));
 

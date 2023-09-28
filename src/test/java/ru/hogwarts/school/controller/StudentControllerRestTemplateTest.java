@@ -46,17 +46,17 @@ class StudentControllerRestTemplateTest {
         students = new ArrayList<>();
         Student student1 = new Student();
         student1.setName("John");
-        student1.setAge(10);
+        student1.setAge(30);
         students.add(student1);
 
         Student student2 = new Student();
         student2.setName("Jane");
-        student2.setAge(15);
+        student2.setAge(25);
         students.add(student2);
 
         Student student3 = new Student();
         student3.setName("Bob");
-        student3.setAge(20);
+        student3.setAge(22);
         students.add(student3);
     }
 
@@ -114,14 +114,14 @@ class StudentControllerRestTemplateTest {
         Student updatedStudent = students.get(0);
         updatedStudent.setId(studentId);
         updatedStudent.setName("Mark");
-        updatedStudent.setAge(15);
+        updatedStudent.setAge(25);
 
         ResponseEntity<Student> response = this.testRestTemplate.exchange("http://localhost:" + localServerPort +
                 "/student", HttpMethod.PUT, new HttpEntity<>(updatedStudent), Student.class);
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         Assertions.assertThat(Objects.requireNonNull(response.getBody()).getName()).isEqualTo("Mark");
-        Assertions.assertThat(response.getBody().getAge()).isEqualTo(15);
+        Assertions.assertThat(response.getBody().getAge()).isEqualTo(25);
     }
 
     @Test
@@ -144,24 +144,24 @@ class StudentControllerRestTemplateTest {
         Student student2 = studentRepository.save(students.get(1));
         Student student3 = studentRepository.save(students.get(2));
 
-        ResponseEntity<List<Student>> studentsAge10 = testRestTemplate.exchange("http://localhost:" + localServerPort +
-                "/student/age?age=10", HttpMethod.GET, null, new ParameterizedTypeReference<List<Student>>() {});
-        ResponseEntity<List<Student>> studentsAge15 = testRestTemplate.exchange("http://localhost:" + localServerPort +
-                "/student/age?age=15", HttpMethod.GET, null, new ParameterizedTypeReference<List<Student>>() {});
-        ResponseEntity<List<Student>> studentsAge20 = testRestTemplate.exchange("http://localhost:" + localServerPort +
-                "/student/age?age=20", HttpMethod.GET, null, new ParameterizedTypeReference<List<Student>>() {});
+        ResponseEntity<List<Student>> studentsAge30 = testRestTemplate.exchange("http://localhost:" + localServerPort +
+                "/student/age?age=30", HttpMethod.GET, null, new ParameterizedTypeReference<List<Student>>() {});
+        ResponseEntity<List<Student>> studentsAge25 = testRestTemplate.exchange("http://localhost:" + localServerPort +
+                "/student/age?age=25", HttpMethod.GET, null, new ParameterizedTypeReference<List<Student>>() {});
+        ResponseEntity<List<Student>> studentsAge22 = testRestTemplate.exchange("http://localhost:" + localServerPort +
+                "/student/age?age=22", HttpMethod.GET, null, new ParameterizedTypeReference<List<Student>>() {});
 
-        Assertions.assertThat(studentsAge10.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(Objects.requireNonNull(studentsAge10.getBody()).size()).isEqualTo(1);
-        Assertions.assertThat(Objects.requireNonNull(studentsAge10.getBody()).get(0).getName()).isEqualTo(student1.getName());
+        Assertions.assertThat(studentsAge30.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(Objects.requireNonNull(studentsAge30.getBody()).size()).isEqualTo(1);
+        Assertions.assertThat(Objects.requireNonNull(studentsAge30.getBody()).get(0).getName()).isEqualTo(student1.getName());
 
-        Assertions.assertThat(studentsAge15.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(Objects.requireNonNull(studentsAge15.getBody()).size()).isEqualTo(1);
-        Assertions.assertThat(Objects.requireNonNull(studentsAge15.getBody()).get(0).getName()).isEqualTo(student2.getName());
+        Assertions.assertThat(studentsAge25.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(Objects.requireNonNull(studentsAge25.getBody()).size()).isEqualTo(1);
+        Assertions.assertThat(Objects.requireNonNull(studentsAge25.getBody()).get(0).getName()).isEqualTo(student2.getName());
 
-        Assertions.assertThat(studentsAge20.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(Objects.requireNonNull(studentsAge20.getBody()).size()).isEqualTo(1);
-        Assertions.assertThat(Objects.requireNonNull(studentsAge20.getBody()).get(0).getName()).isEqualTo(student3.getName());
+        Assertions.assertThat(studentsAge22.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Assertions.assertThat(Objects.requireNonNull(studentsAge22.getBody()).size()).isEqualTo(1);
+        Assertions.assertThat(Objects.requireNonNull(studentsAge22.getBody()).get(0).getName()).isEqualTo(student3.getName());
     }
 
 
@@ -172,11 +172,11 @@ class StudentControllerRestTemplateTest {
             studentRepository.save(student);
         }
 
-        String url = "http://localhost:" + localServerPort + "/student/age-range?min=10&max=20";
+        String url = "http://localhost:" + localServerPort + "/student/age-range?min=20&max=40";
 
         ResponseEntity<List> response = testRestTemplate.getForEntity(url, List.class);
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(Objects.requireNonNull(response.getBody()).size()).isGreaterThanOrEqualTo(2);
+        Assertions.assertThat(Objects.requireNonNull(response.getBody()).size()).isGreaterThanOrEqualTo(3);
     }
 
     @Test
