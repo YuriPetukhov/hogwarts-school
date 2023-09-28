@@ -21,6 +21,7 @@ public class Faculty {
     private String color;
 
     @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private List<Student> students = new ArrayList<>();
 
     @Override

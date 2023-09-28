@@ -79,7 +79,7 @@ public class StudentController {
         if (faculty == null) {
             throw new ElementNotExistException("У студента нет факультета");
         } else {
-            return ResponseEntity.ok(FacultyDTO.fromEntity(faculty));
+            return ResponseEntity.ok(FacultyDTO.fromEntity(faculty, false));
         }
     }
 }

@@ -11,39 +11,23 @@ import java.util.stream.Collectors;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class FacultyDTO {
+public class FacultyGeneralDTO {
     private Long id;
     private String name;
     private String color;
-    private List<StudentDTO> students;
 
-    public FacultyDTO(Long id, String name, String color) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-    }
-
-
-    public static FacultyDTO fromEntity(Faculty faculty, boolean withStudents) {
+    public static FacultyGeneralDTO fromEntity(Faculty faculty) {
         if (faculty == null) {
             return null;
         }
 
-        FacultyDTO facultyDTO = new FacultyDTO();
+        FacultyGeneralDTO facultyDTO = new FacultyGeneralDTO();
         facultyDTO.setId(faculty.getId());
         facultyDTO.setName(faculty.getName());
         facultyDTO.setColor(faculty.getColor());
 
-        if (withStudents) {
-            List<StudentDTO> studentDTOS = faculty.getStudents().stream()
-                    .map(StudentDTO::fromEntity)
-                    .collect(Collectors.toList());
-            facultyDTO.setStudents(studentDTOS);
-        }
-
         return facultyDTO;
     }
-
     public Faculty toEntity() {
         Faculty faculty = new Faculty();
         faculty.setId(this.getId());
@@ -52,9 +36,9 @@ public class FacultyDTO {
 
         return faculty;
     }
-    public static List<FacultyDTO> mapFacultiesToDtoList(List<Faculty> faculties) {
+    public static List<FacultyGeneralDTO> mapFacultiesGeneralToDtoList(List<Faculty> faculties) {
         return faculties.stream()
-                .map(faculty -> new FacultyDTO(faculty.getId(), faculty.getName(), faculty.getColor()))
+                .map(faculty -> new FacultyGeneralDTO(faculty.getId(), faculty.getName(), faculty.getColor()))
                 .collect(Collectors.toList());
     }
 }
