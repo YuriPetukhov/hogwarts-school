@@ -1,6 +1,5 @@
 package ru.hogwarts.school.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -20,7 +19,7 @@ public class Faculty {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Student> students = new ArrayList<>();
 

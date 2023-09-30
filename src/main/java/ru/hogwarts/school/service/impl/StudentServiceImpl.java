@@ -2,6 +2,7 @@ package ru.hogwarts.school.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.hogwarts.school.exception.ElementNotAcceptableException;
 import ru.hogwarts.school.exception.ElementNotExistException;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
@@ -23,7 +24,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Student addStudent(Student student) {
         if (!isValidStudent(student)) {
-            throw new ElementNotExistException("Неверные данные");
+            throw new ElementNotAcceptableException("Недопустимые данные");
         }
         student.setFaculty(selectRandomFaculty());
         return studentRepository.save(student);

@@ -50,10 +50,7 @@ public class FacultyController {
     }
 
     @GetMapping("/color")
-    public ResponseEntity<List<FacultyGeneralDTO>> getFacultyByColor(@RequestParam(required = false) String color) {
-        if (color == null) {
-            throw new ElementNotExistException("Не указан параметр color");
-        }
+    public ResponseEntity<List<FacultyGeneralDTO>> getFacultyByColor(@RequestParam String color) {
         List<Faculty> faculties = facultyService.getFacultyByColor(color);
         List<FacultyGeneralDTO> facultyDTOS = mapFacultiesGeneralToDtoList(faculties);
         return ResponseEntity.ok(facultyDTOS);
