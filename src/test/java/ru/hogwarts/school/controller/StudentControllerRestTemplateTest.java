@@ -39,7 +39,6 @@ class StudentControllerRestTemplateTest {
     private TestRestTemplate testRestTemplate;
     private static List<Student> students;
     private static List<Faculty> faculties;
-    private static Long studentId;
 
     @BeforeEach
     public void setup() {
@@ -83,12 +82,12 @@ class StudentControllerRestTemplateTest {
 
     @AfterEach
     public void cleanup() {
-        for (Student student : students) {
-            studentRepository.delete(student);
-        }
-        for (Faculty faculty : faculties) {
-            facultyRepository.delete(faculty);
-        }
+        studentRepository.findAll().forEach(student -> {
+            student.setFaculty(null);
+            studentRepository.save(student);
+        });
+        studentRepository.deleteAll();
+        facultyRepository.deleteAll();
     }
 
     @Test
@@ -108,8 +107,6 @@ class StudentControllerRestTemplateTest {
         Assertions.assertThat(savedTestStudent).isNotNull();
         Assertions.assertThat(savedTestStudent.getName()).isEqualTo(testStudent.getName());
         Assertions.assertThat(savedTestStudent.getAge()).isEqualTo(testStudent.getAge());
-
-        studentId = savedTestStudent.getId();
     }
 
     @Test
@@ -154,9 +151,8 @@ class StudentControllerRestTemplateTest {
     @Test
     @Order(4)
     void testRemoveStudent() {
-        if (studentId == null) {
-            throw new ElementNotExistException("Такого студента нет в базе.");
-        }
+        Student testStudent = studentRepository.save(students.get(0));
+        Long studentId = testStudent.getId();
 
         this.testRestTemplate.delete("http://localhost:" + localServerPort + "/student/" + studentId);
 
@@ -167,7 +163,7 @@ class StudentControllerRestTemplateTest {
     @Test
     @Order(5)
     void testGetStudentsByAge() {
-        Faculty faculty = facultyRepository.save(faculties.get(0));
+        facultyRepository.save(faculties.get(0));
         Student student1 = studentRepository.save(students.get(0));
         Student student2 = studentRepository.save(students.get(1));
         Student student3 = studentRepository.save(students.get(2));
