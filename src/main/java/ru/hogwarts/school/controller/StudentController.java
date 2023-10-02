@@ -1,6 +1,7 @@
 package ru.hogwarts.school.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -82,5 +83,19 @@ public class StudentController {
         } else {
             return ResponseEntity.ok(FacultyDTO.fromEntity(faculty, false));
         }
+    }
+    @GetMapping("count-all-students")
+    public Long countAllStudents(){
+        return studentService.countAllStudents();
+    }
+    @GetMapping("average-age")
+    public  Double getAverageAge(){
+        return studentService.getAverageAge();
+    }
+    @GetMapping("last-five-students")
+    public ResponseEntity<List<StudentDTO>> findLastFiveStudents(){
+        List<Student> students = studentService.findLastFiveStudents();
+        List<StudentDTO> studentsDto = mapStudentsToDtoList(students);
+        return ResponseEntity.ok(studentsDto);
     }
 }

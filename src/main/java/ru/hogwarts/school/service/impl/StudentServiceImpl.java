@@ -1,6 +1,8 @@
 package ru.hogwarts.school.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.exception.ElementNotAcceptableException;
 import ru.hogwarts.school.exception.ElementNotExistException;
@@ -82,6 +84,22 @@ public class StudentServiceImpl implements StudentService {
         int randomIndex = new Random().nextInt(faculties.size());
         return faculties.get(randomIndex);
     }
+
+    @Override
+    public Long countAllStudents() {
+        return studentRepository.countAllStudents();
+    }
+
+    @Override
+    public Double getAverageAge() {
+        return studentRepository.getAverageAge();
+    }
+    @Override
+    public List<Student> findLastFiveStudents() {
+        PageRequest of = PageRequest.of(0, 5);
+        return studentRepository.findLastFiveStudents(of);
+    }
+
     private boolean isValidStudent(Student student) {
         return student.getName() != null && student.getAge() >= 20;
     }

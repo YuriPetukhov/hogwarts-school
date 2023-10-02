@@ -27,12 +27,11 @@ public class Faculty {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Faculty faculty)) return false;
-        return Objects.equals(id, faculty.id) && Objects.equals(name, faculty.name) && Objects.equals(color, faculty.color);
+        return Objects.equals(id, faculty.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color);
+        return Objects.hash(id);
     }
-
 }

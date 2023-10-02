@@ -1,6 +1,6 @@
 package ru.hogwarts.school.service;
 
-import ru.hogwarts.school.dto.StudentDTO;
+import org.springframework.data.domain.Pageable;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 
@@ -23,4 +23,9 @@ public interface StudentService {
     Faculty getFacultyOfStudent(Long id);
 
     Faculty selectRandomFaculty();
+    Long countAllStudents();
+
+    Double getAverageAge();
+
+    List<Student> findLastFiveStudents();
 }
