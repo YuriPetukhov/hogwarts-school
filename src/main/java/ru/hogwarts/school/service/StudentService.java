@@ -1,37 +1,31 @@
 package ru.hogwarts.school.service;
 
-import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Pageable;
+import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
-@Service
-public class StudentService {
-    private final Map<Long, Student> students = new HashMap<>();
-    private Long lastId = 0L;
+public interface StudentService {
+    Student addStudent(Student student);
 
-    public Student addStudent(Student student) {
-        student.setId(++lastId);
-        students.put(lastId, student);
-        return student;
-    }
-    public Student findStudent(Long id) {
-        return students.get(id);
-    }
-    public Student updateStudent(Student student) {
-        return students.put(student.getId(), student);
-    }
-    public Student removeStudent(long id) {
-        return students.remove(id);
-    }
+    Optional<Student> findStudent(Long id);
 
-    public List<Student> getStudentsByAge(int age) {
-        return students.values().stream()
-                .filter(student -> student.getAge() == age)
-                .collect(Collectors.toList());
-    }
+    Student updateStudent(Student student);
+
+    void removeStudent(long id);
+
+    List<Student> getStudentsByAge(int age);
+
+    List<Student> findByAgeBetween(int min, int max);
+
+    Faculty getFacultyOfStudent(Long id);
+
+    Faculty selectRandomFaculty();
+    Long countAllStudents();
+
+    Double getAverageAge();
+
+    List<Student> findLastFiveStudents();
 }

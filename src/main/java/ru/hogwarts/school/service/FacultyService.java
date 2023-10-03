@@ -1,38 +1,27 @@
 package ru.hogwarts.school.service;
 
-import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.model.Student;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
-@Service
-public class FacultyService {
-    private final Map<Long, Faculty> faculties = new HashMap<>();
-    private Long lastId = 0L;
+public interface FacultyService {
 
-    public Faculty addFaculty(Faculty faculty) {
-        faculty.setId(++lastId);
-        return faculties.put(lastId, faculty);
-    }
+    Faculty addFaculty(Faculty faculty);
 
-    public Faculty findFaculty(Long id) {
-        return faculties.get(id);
-    }
+    Faculty findFaculty(Long id);
 
-    public Faculty updateFaculty(Faculty faculty) {
-        return faculties.put(faculty.getId(), faculty);
-    }
+    Faculty updateFaculty(Faculty faculty);
 
-    public Faculty removeFaculty(long id) {
-        return faculties.remove(id);
-    }
+    void removeFaculty(long id);
 
-    public List<Faculty> getFacultyByColor(String color) {
-        return faculties.values().stream()
-                .filter(faculty -> faculty.getColor().equals(color))
-                .collect(Collectors.toList());
-    }
+    List<Faculty> getFacultyByColor(String color);
+
+    List<Faculty> findByNameIgnoreCaseOrColorIgnoreCase(String name, String color);
+    List<Student> getStudentsOfFaculty(Long id);
+
+    List<Faculty> findAll();
+
+    Optional<Faculty> findById(Long id);
 }

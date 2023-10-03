@@ -3,31 +3,32 @@ package ru.hogwarts.school.model;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Objects;
-@Setter
 @Getter
+@Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "faculties")
-public class Faculty {
+@Entity (name = "avatars")
+public class Avatar {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private String color;
+    private String filePath;
+    private long fileSize;
+    private String mediaType;
+    @Lob
+    private byte[] data;
 
-    @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private List<Student> students = new ArrayList<>();
+    @OneToOne
+    private Student student;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Faculty faculty)) return false;
-        return Objects.equals(id, faculty.id);
+        if (!(o instanceof Avatar avatar)) return false;
+        return Objects.equals(id, avatar.id);
     }
 
     @Override
