@@ -24,9 +24,6 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student addStudent(Student student) {
-        if (!isValidStudent(student)) {
-            throw new ElementNotAcceptableException("Недопустимые данные");
-        }
         student.setFaculty(selectRandomFaculty());
         return studentRepository.save(student);
     }
