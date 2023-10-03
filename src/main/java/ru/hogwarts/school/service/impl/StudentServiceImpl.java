@@ -103,6 +103,6 @@ public class StudentServiceImpl implements StudentService {
     }
 
     private boolean isValidStudent(Student student) {
-        return student.getName() != null && student.getAge() >= 20;
+        return student.getName() != null && student.getAge() >= 16;
     }
 }
