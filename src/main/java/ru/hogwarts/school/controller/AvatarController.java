@@ -26,7 +26,9 @@ public class AvatarController {
     private final AvatarService avatarService;
 
     @PostMapping(value = "/{studentId}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadAvatar(@PathVariable Long studentId, @RequestParam MultipartFile avatar) throws IOException {
+    public ResponseEntity<String> uploadAvatar(
+            @PathVariable Long studentId,
+            @RequestParam MultipartFile avatar) throws IOException {
         avatarService.uploadAvatar(studentId, avatar);
         return ResponseEntity.ok().build();
     }
@@ -56,7 +58,9 @@ public class AvatarController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Avatar>> getAllAvatars(@RequestParam(value = "page") Integer pageNumber, @RequestParam(value = "size") Integer pageSize) {
+    public ResponseEntity<List<Avatar>> getAllAvatars(
+            @RequestParam(value = "page") Integer pageNumber,
+            @RequestParam(value = "size") Integer pageSize) {
         return ResponseEntity.ok().body(avatarService.getAllAvatars(pageNumber, pageSize));
     }
 }

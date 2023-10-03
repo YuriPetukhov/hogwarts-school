@@ -2,7 +2,6 @@ package ru.hogwarts.school.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.exception.ElementNotAcceptableException;
 import ru.hogwarts.school.exception.ElementNotExistException;
@@ -51,6 +50,7 @@ public class StudentServiceImpl implements StudentService {
 
         return studentRepository.save(student);
     }
+
     @Override
     public void removeStudent(long id) {
         if (!studentRepository.existsById(id)) {
@@ -75,6 +75,7 @@ public class StudentServiceImpl implements StudentService {
                 .orElseThrow(() -> new ElementNotExistException("Такого студента нет в базе"));
         return student.getFaculty();
     }
+
     @Override
     public Faculty selectRandomFaculty() {
         List<Faculty> faculties = facultyService.findAll();
@@ -94,6 +95,7 @@ public class StudentServiceImpl implements StudentService {
     public Double getAverageAge() {
         return studentRepository.getAverageAge();
     }
+
     @Override
     public List<Student> findLastFiveStudents() {
         PageRequest of = PageRequest.of(0, 5);
