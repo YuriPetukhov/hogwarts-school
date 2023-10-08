@@ -1,14 +1,10 @@
 package ru.hogwarts.school.model;
 
-import lombok.*;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-@ToString
-@AllArgsConstructor
-@NoArgsConstructor
+
 @Entity(name = "faculties")
 public class Faculty {
     @Id
@@ -18,8 +14,17 @@ public class Faculty {
     private String color;
 
     @OneToMany(mappedBy = "faculty", cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
-    @ToString.Exclude
     private List<Student> students = new ArrayList<>();
+
+    public Faculty() {
+    }
+
+    public Faculty(Long id, String name, String color, List<Student> students) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.students = students;
+    }
 
     public Long getId() {
         return id;
@@ -65,5 +70,14 @@ public class Faculty {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Faculty{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                '}';
     }
 }

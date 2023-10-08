@@ -1,11 +1,8 @@
 package ru.hogwarts.school.model;
 
-import lombok.*;
-
 import javax.persistence.*;
 import java.util.Objects;
-@ToString
-@NoArgsConstructor
+
 @Entity(name = "students")
 public class Student {
     @Id
@@ -19,9 +16,19 @@ public class Student {
     @JoinColumn(name = "faculty_id")
     private Faculty faculty;
 
+    public Student() {
+    }
+    public Student(Long id, String name, int age, Faculty faculty) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+        this.faculty = faculty;
+    }
+
     public Long getId() {
         return id;
     }
+
 
     public void setId(Long id) {
         this.id = id;
@@ -51,13 +58,6 @@ public class Student {
         this.faculty = faculty;
     }
 
-    public Student(Long id, String name, int age, Faculty faculty) {
-        this.id = id;
-        this.name = name;
-        this.age = age;
-        this.faculty = faculty;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -70,5 +70,14 @@ public class Student {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", age=" + age +
+                '}';
     }
 }

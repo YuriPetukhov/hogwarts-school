@@ -1,12 +1,9 @@
 package ru.hogwarts.school.model;
 
-import lombok.*;
 
 import javax.persistence.*;
 import java.util.Objects;
-@ToString
-@AllArgsConstructor
-@NoArgsConstructor
+
 @Entity (name = "avatars")
 public class Avatar {
     @Id
@@ -20,6 +17,18 @@ public class Avatar {
 
     @OneToOne
     private Student student;
+
+    public Avatar() {
+    }
+
+    public Avatar(Long id, String filePath, long fileSize, String mediaType, byte[] data, Student student) {
+        this.id = id;
+        this.filePath = filePath;
+        this.fileSize = fileSize;
+        this.mediaType = mediaType;
+        this.data = data;
+        this.student = student;
+    }
 
     public Long getId() {
         return id;
@@ -81,4 +90,5 @@ public class Avatar {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }
