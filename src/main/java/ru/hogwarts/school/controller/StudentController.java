@@ -18,11 +18,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/student")
 public class StudentController {
     private final StudentService studentService;
     private final MapperService mapperService;
+
+    public StudentController(StudentService studentService, MapperService mapperService) {
+        this.studentService = studentService;
+        this.mapperService = mapperService;
+    }
 
     @PostMapping
     @Operation(summary = "Добавить студента")

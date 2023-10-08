@@ -20,10 +20,13 @@ import java.nio.file.Path;
 import java.util.List;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/avatar")
 public class AvatarController {
     private final AvatarService avatarService;
+
+    public AvatarController(AvatarService avatarService) {
+        this.avatarService = avatarService;
+    }
 
     @PostMapping(value = "/{studentId}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadAvatar(

@@ -14,12 +14,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-@RequiredArgsConstructor
 @Service
 public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final FacultyService facultyService;
 
+    public StudentServiceImpl(StudentRepository studentRepository, FacultyService facultyService) {
+        this.studentRepository = studentRepository;
+        this.facultyService = facultyService;
+    }
 
     @Override
     public Student addStudent(Student student) {

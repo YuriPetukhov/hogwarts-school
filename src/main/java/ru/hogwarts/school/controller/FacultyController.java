@@ -16,11 +16,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/faculty")
 public class FacultyController {
     private final FacultyService facultyService;
     private final MapperService mapperService;
+
+    public FacultyController(FacultyService facultyService, MapperService mapperService) {
+        this.facultyService = facultyService;
+        this.mapperService = mapperService;
+    }
 
     @PostMapping
     public ResponseEntity<FacultyGeneralDTO> addFaculty(@RequestBody FacultyGeneralDTO facultyGeneralDTO) {

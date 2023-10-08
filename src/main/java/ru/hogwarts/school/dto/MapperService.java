@@ -1,10 +1,13 @@
 package ru.hogwarts.school.dto;
 
+import lombok.Data;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
+import org.springframework.stereotype.Component;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 
+@Component
 @Mapper(componentModel = "spring")
 public interface MapperService {
 
@@ -25,7 +28,5 @@ public interface MapperService {
 
     @InheritInverseConfiguration
     StudentDTO toDtoStudent(Student student);
-
-
 }
 

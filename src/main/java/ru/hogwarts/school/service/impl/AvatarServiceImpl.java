@@ -23,11 +23,16 @@ import java.util.Optional;
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
 @Transactional
-@RequiredArgsConstructor
 @Service
 public class AvatarServiceImpl implements AvatarService {
     private final AvatarRepository avatarRepository;
     private final StudentService studentService;
+
+    public AvatarServiceImpl(AvatarRepository avatarRepository, StudentService studentService) {
+        this.avatarRepository = avatarRepository;
+        this.studentService = studentService;
+    }
+
     @Value("${path.to.avatars.folder}")
     private String avatarsDir;
 

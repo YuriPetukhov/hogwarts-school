@@ -6,8 +6,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-@Setter
-@Getter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,12 +21,46 @@ public class Faculty {
     @ToString.Exclude
     private List<Student> students = new ArrayList<>();
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public List<Student> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<Student> students) {
+        this.students = students;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Faculty faculty)) return false;
+        if (!(o instanceof Faculty)) return false;
+        Faculty faculty = (Faculty) o;
         return Objects.equals(id, faculty.id);
     }
+
 
     @Override
     public int hashCode() {
