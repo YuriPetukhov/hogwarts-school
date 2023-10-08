@@ -1,10 +1,12 @@
 package ru.hogwarts.school.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.dto.FacultyDTO;
+import ru.hogwarts.school.dto.MapperService;
 import ru.hogwarts.school.dto.StudentCreateDTO;
 import ru.hogwarts.school.dto.StudentDTO;
 import ru.hogwarts.school.exception.ElementNotExistException;
@@ -13,19 +15,20 @@ import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
 
 import java.util.List;
-
-import static ru.hogwarts.school.dto.StudentDTO.mapStudentsToDtoList;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/student")
 public class StudentController {
     private final StudentService studentService;
+    private final MapperService mapperService;
 
     @PostMapping
+    @Operation(summary = "Добавить студента")
     public ResponseEntity<StudentDTO> addStudent(@RequestBody StudentCreateDTO studentCreateDTO) {
-        Student student = studentService.addStudent(studentCreateDTO.toEntity());
-        return ResponseEntity.status(HttpStatus.CREATED).body(StudentDTO.fromEntity(student));
+        Student student = studentService.addStudent(mapperService.toEntityStudentCreate(studentCreateDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapperService.toDtoStudent(student));
     }
 
     @GetMapping("{id}")
@@ -33,14 +36,14 @@ public class StudentController {
         Student student = studentService.findStudent(id)
                 .orElseThrow(() ->
                         new ElementNotExistException("Такого студента нет в базе"));
-        StudentDTO studentDTO = StudentDTO.fromEntity(student);
+        StudentDTO studentDTO = mapperService.toDtoStudent(student);
         return ResponseEntity.ok(studentDTO);
     }
 
     @PutMapping
     public ResponseEntity<StudentDTO> updateStudent(@RequestBody StudentDTO studentDTO) {
-        Student student = studentService.updateStudent(studentDTO.toEntity());
-        return ResponseEntity.status(HttpStatus.OK).body(StudentDTO.fromEntity(student));
+        Student student = studentService.updateStudent(mapperService.toEntityStudent(studentDTO));
+        return ResponseEntity.status(HttpStatus.OK).body(mapperService.toDtoStudent(student));
     }
 
     @DeleteMapping("{id}")
@@ -56,7 +59,9 @@ public class StudentController {
             throw new ElementNotExistException("Не указан параметр age");
         }
         List<Student> students = studentService.getStudentsByAge(age);
-        List<StudentDTO> studentsDto = mapStudentsToDtoList(students);
+        List<StudentDTO> studentsDto = students.stream()
+                .map(mapperService::toDtoStudent)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(studentsDto);
     }
 
@@ -70,7 +75,9 @@ public class StudentController {
             throw new ElementNotExistException("Неправильные параметры диапазона");
         }
         List<Student> students = studentService.findByAgeBetween(min, max);
-        List<StudentDTO> studentsDto = mapStudentsToDtoList(students);
+        List<StudentDTO> studentsDto = students.stream()
+                .map(mapperService::toDtoStudent)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(studentsDto);
     }
 
@@ -80,7 +87,7 @@ public class StudentController {
         if (faculty == null) {
             throw new ElementNotExistException("У студента нет факультета");
         } else {
-            return ResponseEntity.ok(FacultyDTO.fromEntity(faculty, false));
+            return ResponseEntity.ok(mapperService.toDtoFaculty(faculty));
         }
     }
 
@@ -97,7 +104,9 @@ public class StudentController {
     @GetMapping("last-five-students")
     public ResponseEntity<List<StudentDTO>> findLastFiveStudents() {
         List<Student> students = studentService.findLastFiveStudents();
-        List<StudentDTO> studentsDto = mapStudentsToDtoList(students);
+        List<StudentDTO> studentsDto = students.stream()
+                .map(mapperService::toDtoStudent)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(studentsDto);
     }
 }

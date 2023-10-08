@@ -1,21 +1,19 @@
-CREATE TABLE faculties (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255),
-    color VARCHAR(50)
+CREATE TABLE People (
+   person_id SERIAL PRIMARY KEY,
+   name VARCHAR(255),
+   age INTEGER,
+   has_license BOOLEAN
 );
 
-CREATE TABLE students (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255),
-    age INTEGER,
-    faculty_id INTEGER REFERENCES faculties(id)
+CREATE TABLE Cars (
+   car_id SERIAL PRIMARY KEY,
+   brand VARCHAR(255),
+   model VARCHAR(255),
+   cost DECIMAL(10, 2)
 );
 
-CREATE TABLE avatars (
-    id SERIAL PRIMARY KEY,
-    filePath VARCHAR(255),
-    fileSize BIGINT,
-    mediaType VARCHAR(255),
-    data BYTEA,
-    student_id INTEGER UNIQUE REFERENCES students(id)
+CREATE TABLE PersonCars (
+   person_car_id SERIAL PRIMARY KEY,
+   person_id INTEGER REFERENCES People(person_id),
+   car_id INTEGER REFERENCES Cars(car_id)
 );
