@@ -30,9 +30,9 @@ public class StudentController {
 
     @PostMapping
     @Operation(summary = "Добавить студента")
-    public ResponseEntity<StudentCreateDTO> addStudent(@RequestBody StudentCreateDTO studentCreateDTO) {
+    public ResponseEntity<StudentDTO> addStudent(@RequestBody StudentCreateDTO studentCreateDTO) {
         Student student = studentService.addStudent(mapperService.toEntityStudentCreate(studentCreateDTO));
-        return ResponseEntity.status(HttpStatus.CREATED).body(mapperService.toDtoStudentCreate(student));
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapperService.toDtoStudent(student));
     }
 
     @GetMapping("{id}")

@@ -40,6 +40,11 @@ public class StudentServiceImpl implements StudentService {
         if (!studentRepository.existsById(id)) {
             throw new ElementNotExistException("Такого студента нет в базе");
         }
+        if (student.getFaculty() != null && student.getFaculty().getId() != null) {
+            Faculty existingFaculty = facultyService.findById(student.getFaculty().getId())
+                    .orElseThrow(() -> new ElementNotExistException("Факультет не найден"));
+            student.setFaculty(existingFaculty);
+        }
 
         return studentRepository.save(student);
     }
