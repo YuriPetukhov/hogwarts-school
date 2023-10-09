@@ -30,9 +30,9 @@ public class StudentController {
 
     @PostMapping
     @Operation(summary = "Добавить студента")
-    public ResponseEntity<StudentDTO> addStudent(@RequestBody StudentCreateDTO studentCreateDTO) {
+    public ResponseEntity<StudentCreateDTO> addStudent(@RequestBody StudentCreateDTO studentCreateDTO) {
         Student student = studentService.addStudent(mapperService.toEntityStudentCreate(studentCreateDTO));
-        return ResponseEntity.status(HttpStatus.CREATED).body(mapperService.toDtoStudent(student));
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapperService.toDtoStudentCreate(student));
     }
 
     @GetMapping("{id}")
@@ -44,9 +44,11 @@ public class StudentController {
         return ResponseEntity.ok(studentDTO);
     }
 
-    @PutMapping
-    public ResponseEntity<StudentDTO> updateStudent(@RequestBody StudentDTO studentDTO) {
-        Student student = studentService.updateStudent(mapperService.toEntityStudent(studentDTO));
+    @PutMapping("{id}")
+    public ResponseEntity<StudentDTO> updateStudent(
+            @PathVariable Long id,
+            @RequestBody StudentDTO studentDTO) {
+        Student student = studentService.updateStudent(id, mapperService.toEntityStudent(studentDTO));
         return ResponseEntity.status(HttpStatus.OK).body(mapperService.toDtoStudent(student));
     }
 

@@ -1,18 +1,23 @@
 package ru.hogwarts.school.dto;
 
-import lombok.*;
-import ru.hogwarts.school.model.Faculty;
 
 import java.util.List;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class FacultyDTO {
     private Long id;
     private String name;
     private String color;
     private List<StudentDTO> students;
+
+    public FacultyDTO() {
+    }
+
+    public FacultyDTO(Long id, String name, String color, List<StudentDTO> students) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.students = students;
+    }
 
     public Long getId() {
         return id;
