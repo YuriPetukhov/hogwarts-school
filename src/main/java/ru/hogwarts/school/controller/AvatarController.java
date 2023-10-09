@@ -1,5 +1,6 @@
 package ru.hogwarts.school.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,7 @@ public class AvatarController {
     }
 
     @PostMapping(value = "/{studentId}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Добавить аватарку для студента")
     public ResponseEntity<String> uploadAvatar(
             @PathVariable Long studentId,
             @RequestParam MultipartFile avatar) throws IOException {
@@ -37,6 +39,7 @@ public class AvatarController {
     }
 
     @GetMapping(value = "/{id}/avatar/preview")
+    @Operation(summary = "Посмотреть превью аватарки студента")
     public ResponseEntity<byte[]> downloadAvatarPreview(@PathVariable Long id) {
         Avatar avatar = avatarService.findAvatar(id)
                 .orElseThrow(() -> new ElementNotExistException("Такого аватара нет в базе"));
@@ -47,6 +50,7 @@ public class AvatarController {
     }
 
     @GetMapping(value = "/{id}/avatar")
+    @Operation(summary = "Посмотреть аватарку студента")
     public void downloadAvatar(@PathVariable Long id, HttpServletResponse response) throws IOException {
         Avatar avatar = avatarService.findAvatar(id)
                 .orElseThrow(() -> new ElementNotExistException("Такого аватара нет в базе"));
@@ -61,6 +65,7 @@ public class AvatarController {
     }
 
     @GetMapping
+    @Operation(summary = "Получить все аватарки с учетом пагинации")
     public ResponseEntity<List<Avatar>> getAllAvatars(
             @RequestParam(value = "page") Integer pageNumber,
             @RequestParam(value = "size") Integer pageSize) {

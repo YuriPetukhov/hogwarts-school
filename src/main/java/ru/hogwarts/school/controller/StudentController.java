@@ -29,13 +29,14 @@ public class StudentController {
     }
 
     @PostMapping
-    @Operation(summary = "Добавить студента")
+    @Operation(summary = "Зачислить студента")
     public ResponseEntity<StudentDTO> addStudent(@RequestBody StudentCreateDTO studentCreateDTO) {
         Student student = studentService.addStudent(mapperService.toEntityStudentCreate(studentCreateDTO));
         return ResponseEntity.status(HttpStatus.CREATED).body(mapperService.toDtoStudent(student));
     }
 
     @GetMapping("{id}")
+    @Operation(summary = "Найти студента по ID")
     public ResponseEntity<StudentDTO> findStudent(@PathVariable Long id) {
         Student student = studentService.findStudent(id)
                 .orElseThrow(() ->
@@ -44,7 +45,8 @@ public class StudentController {
         return ResponseEntity.ok(studentDTO);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
+    @Operation(summary = "Изменить параметры студента, в том числе перевести на другой факультет")
     public ResponseEntity<StudentDTO> updateStudent(
             @PathVariable Long id,
             @RequestBody StudentDTO studentDTO) {
@@ -53,12 +55,14 @@ public class StudentController {
     }
 
     @DeleteMapping("{id}")
+    @Operation(summary = "Отчислить студента")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void removeStudent(@PathVariable Long id) {
         studentService.removeStudent(id);
     }
 
     @GetMapping("/age")
+    @Operation(summary = "Найти студентов определенного возраста")
     public ResponseEntity<List<StudentDTO>> getStudentsByAge(
             @RequestParam(required = false) Integer age) {
         if (age == null) {
@@ -72,6 +76,7 @@ public class StudentController {
     }
 
     @GetMapping("/age-range")
+    @Operation(summary = "Найти студентов в диапазоне возраста")
     public ResponseEntity<List<StudentDTO>> findByAgeBetween(
             @RequestParam(required = false) Integer min,
             @RequestParam(required = false) Integer max) {
@@ -88,6 +93,7 @@ public class StudentController {
     }
 
     @GetMapping("{studentId}/faculty")
+    @Operation(summary = "Получить инфо о факультете студента")
     public ResponseEntity<FacultyDTO> getFacultyOfStudent(@PathVariable("studentId") Long id) {
         Faculty faculty = studentService.getFacultyOfStudent(id);
         if (faculty == null) {
@@ -98,16 +104,19 @@ public class StudentController {
     }
 
     @GetMapping("count-all-students")
+    @Operation(summary = "Посчитать общее количество студентов")
     public Long countAllStudents() {
         return studentService.countAllStudents();
     }
 
     @GetMapping("average-age")
+    @Operation(summary = "Определить средний возраст студентов")
     public Double getAverageAge() {
         return studentService.getAverageAge();
     }
 
     @GetMapping("last-five-students")
+    @Operation(summary = "Получить пять последних студентов")
     public ResponseEntity<List<StudentDTO>> findLastFiveStudents() {
         List<Student> students = studentService.findLastFiveStudents();
         List<StudentDTO> studentsDto = students.stream()

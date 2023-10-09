@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 
-@Component
+
 @Mapper(componentModel = "spring")
 public interface MapperService {
 
