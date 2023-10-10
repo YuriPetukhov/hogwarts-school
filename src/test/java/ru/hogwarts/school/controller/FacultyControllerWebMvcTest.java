@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.hogwarts.school.dto.*;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
@@ -31,6 +32,8 @@ class FacultyControllerWebMvcTest {
     @MockBean
     private FacultyRepository facultyRepository;
     @MockBean
+    private MapperService mapperService;
+    @MockBean
     private StudentRepository studentRepository;
     @SpyBean
     private FacultyServiceImpl facultyService;
@@ -44,21 +47,37 @@ class FacultyControllerWebMvcTest {
         final String name = "Faculty1";
         final String color = "Color1";
 
-        JSONObject facultyObject = new JSONObject();
-        facultyObject.put("name", name);
-        facultyObject.put("color", color);
+        JSONObject facultyGeneralDTOObject = new JSONObject();
+        facultyGeneralDTOObject.put("name", name);
+        facultyGeneralDTOObject.put("color", color);
 
-        Faculty faculty1 = new Faculty();
-        faculty1.setId(id);
-        faculty1.setName(name);
-        faculty1.setColor(color);
+        Faculty faculty = new Faculty();
+        faculty.setId(id);
+        faculty.setName(name);
+        faculty.setColor(color);
 
-        when(facultyRepository.save(any(Faculty.class))).thenReturn(faculty1);
-        when(facultyRepository.findById(any(Long.class))).thenReturn(Optional.of(faculty1));
+        when(facultyRepository.save(any(Faculty.class))).thenReturn(faculty);
+        when(facultyRepository.findById(any(Long.class))).thenReturn(Optional.of(faculty));
+
+        FacultyGeneralDTO facultyGeneralDTO = new FacultyGeneralDTO();
+        facultyGeneralDTO.setId(id);
+        facultyGeneralDTO.setName(name);
+        facultyGeneralDTO.setColor(color);
+
+        when(mapperService.toEntityFacultyGeneral(any(FacultyGeneralDTO.class))).thenReturn(faculty);
+        when(mapperService.toDtoFacultyGeneral(faculty)).thenReturn(facultyGeneralDTO);
+
+        FacultyDTO facultyDTO = new FacultyDTO();
+        facultyDTO.setId(id);
+        facultyDTO.setName(name);
+        facultyDTO.setColor(color);
+
+        when(mapperService.toEntityFaculty(any(FacultyDTO.class))).thenReturn(faculty);
+        when(mapperService.toDtoFaculty(faculty)).thenReturn(facultyDTO);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/faculty")
-                        .content(facultyObject.toString())
+                        .content(facultyGeneralDTOObject.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(201))
@@ -81,22 +100,30 @@ class FacultyControllerWebMvcTest {
         final String updatedName = "Faculty1 - Updated";
         final String updatedColor = "Color1 - Updated";
 
-        JSONObject facultyObject = new JSONObject();
-        facultyObject.put("id", id);
-        facultyObject.put("name", updatedName);
-        facultyObject.put("color", updatedColor);
+        JSONObject facultyGeneralDTOObject = new JSONObject();
+        facultyGeneralDTOObject.put("id", id);
+        facultyGeneralDTOObject.put("name", updatedName);
+        facultyGeneralDTOObject.put("color", updatedColor);
 
         Faculty updatedFaculty = new Faculty();
         updatedFaculty.setId(id);
         updatedFaculty.setName(updatedName);
         updatedFaculty.setColor(updatedColor);
 
+        FacultyGeneralDTO facultyGeneralDTO = new FacultyGeneralDTO();
+        facultyGeneralDTO.setId(id);
+        facultyGeneralDTO.setName(updatedName);
+        facultyGeneralDTO.setColor(updatedColor);
+
+        when(mapperService.toEntityFacultyGeneral(any(FacultyGeneralDTO.class))).thenReturn(updatedFaculty);
+        when(mapperService.toDtoFacultyGeneral(updatedFaculty)).thenReturn(facultyGeneralDTO);
+
         when(facultyRepository.existsById(any(Long.class))).thenReturn(true);
         when(facultyRepository.save(any(Faculty.class))).thenReturn(updatedFaculty);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .put("/faculty")
-                        .content(facultyObject.toString())
+                        .put("/faculty/" + id)
+                        .content(facultyGeneralDTOObject.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -121,16 +148,25 @@ class FacultyControllerWebMvcTest {
     @Test
     void getFacultyByColor() throws Exception {
         final Long id = 1L;
-        final String updatedName = "Faculty1 - Updated";
-        final String color = "Color1 - Updated";
+        final String name = "Faculty1";
+        final String color = "Color1";
 
         JSONObject facultyObject = new JSONObject();
+        facultyObject.put("name", name);
         facultyObject.put("color", color);
 
         Faculty faculty = new Faculty();
         faculty.setId(id);
-        faculty.setName(updatedName);
+        faculty.setName(name);
         faculty.setColor(color);
+
+        FacultyGeneralDTO facultyGeneralDTO = new FacultyGeneralDTO();
+        facultyGeneralDTO.setId(id);
+        facultyGeneralDTO.setName(name);
+        facultyGeneralDTO.setColor(color);
+
+        when(mapperService.toEntityFacultyGeneral(any(FacultyGeneralDTO.class))).thenReturn(faculty);
+        when(mapperService.toDtoFacultyGeneral(faculty)).thenReturn(facultyGeneralDTO);
 
         when(facultyRepository.findAllByColor(color)).thenReturn(Collections.singletonList(faculty));
 
@@ -154,6 +190,14 @@ class FacultyControllerWebMvcTest {
         faculty.setId(id);
         faculty.setName(name);
         faculty.setColor(color);
+
+        FacultyDTO facultyDTO = new FacultyDTO();
+        facultyDTO.setId(id);
+        facultyDTO.setName(name);
+        facultyDTO.setColor(color);
+
+        when(mapperService.toEntityFaculty(any(FacultyDTO.class))).thenReturn(faculty);
+        when(mapperService.toDtoFaculty(faculty)).thenReturn(facultyDTO);
 
         when(facultyRepository.findByNameIgnoreCaseOrColorIgnoreCase("FACULTY", "FACULTY"))
                 .thenReturn(Collections.singletonList(faculty));
@@ -185,7 +229,7 @@ class FacultyControllerWebMvcTest {
         final Long facultyId = 1L;
         final Long studentId = 1L;
         final String studentName = "Student1";
-        final int age = 18;
+        final int age = 20;
 
         Faculty faculty = new Faculty();
         faculty.setId(facultyId);
@@ -197,6 +241,20 @@ class FacultyControllerWebMvcTest {
         student.setFaculty(faculty);
 
         faculty.setStudents(Collections.singletonList(student));
+
+        FacultyDTO facultyDTO = new FacultyDTO();
+        facultyDTO.setId(facultyId);
+
+        StudentDTO studentDTO = new StudentDTO();
+        studentDTO.setId(studentId);
+        studentDTO.setName(studentName);
+        studentDTO.setAge(age);
+        studentDTO.setFacultyId(facultyId);
+
+        facultyDTO.setStudents(Collections.singletonList(studentDTO));
+
+        when(mapperService.toEntityStudent(any(StudentDTO.class))).thenReturn(student);
+        when(mapperService.toDtoStudent(student)).thenReturn(studentDTO);
 
         when(facultyRepository.findById(facultyId)).thenReturn(Optional.of(faculty));
 

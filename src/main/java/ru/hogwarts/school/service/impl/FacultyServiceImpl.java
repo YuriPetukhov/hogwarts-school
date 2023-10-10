@@ -28,8 +28,8 @@ public class FacultyServiceImpl implements FacultyService {
     }
 
     @Override
-    public Faculty updateFaculty(Faculty faculty) {
-        if (!facultyRepository.existsById(faculty.getId())) {
+    public Faculty updateFaculty(Long id, Faculty faculty) {
+        if (!facultyRepository.existsById(id)) {
             throw new ElementNotExistException("Такого факультета нет в базе");
         }
         return facultyRepository.save(faculty);

@@ -29,18 +29,20 @@ public class FacultyController {
         return ResponseEntity.status(HttpStatus.CREATED).body(mapperService.toDtoFacultyGeneral(faculty));
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     @Operation(summary = "Найти факультет")
     public ResponseEntity<FacultyDTO> findFaculty(@PathVariable Long id) {
         Faculty foundFaculty = facultyService.findFaculty(id);
-        FacultyDTO ffoundFacultyDTO = mapperService.toDtoFaculty(foundFaculty);
-            return ResponseEntity.ok(ffoundFacultyDTO);
+        FacultyDTO foundFacultyDTO = mapperService.toDtoFaculty(foundFaculty);
+            return ResponseEntity.ok(foundFacultyDTO);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     @Operation(summary = "Изменить параметры факультета")
-    public ResponseEntity<FacultyGeneralDTO> updateFaculty(@RequestBody FacultyGeneralDTO facultyGeneralDTO) {
-        Faculty updatedFaculty = facultyService.updateFaculty(mapperService.toEntityFacultyGeneral(facultyGeneralDTO));
+    public ResponseEntity<FacultyGeneralDTO> updateFaculty(
+            @PathVariable Long id,
+            @RequestBody FacultyGeneralDTO facultyGeneralDTO) {
+        Faculty updatedFaculty = facultyService.updateFaculty(id, mapperService.toEntityFacultyGeneral(facultyGeneralDTO));
         return ResponseEntity.status(HttpStatus.OK).body(mapperService.toDtoFacultyGeneral(updatedFaculty));
     }
 
@@ -63,11 +65,11 @@ public class FacultyController {
 
     @GetMapping
     @Operation(summary = "Найти факультет по названию или цвету без учета регистра написания")
-    public ResponseEntity<List<FacultyGeneralDTO>> findByNameIgnoreCaseOrColorIgnoreCase(
+    public ResponseEntity<List<FacultyDTO>> findByNameIgnoreCaseOrColorIgnoreCase(
             @RequestParam String nameOrColor) {
         List<Faculty> faculties = facultyService.findByNameIgnoreCaseOrColorIgnoreCase(nameOrColor, nameOrColor);
-        List<FacultyGeneralDTO> facultyDTOS = faculties.stream()
-                .map(mapperService::toDtoFacultyGeneral)
+        List<FacultyDTO> facultyDTOS = faculties.stream()
+                .map(mapperService::toDtoFaculty)
                 .collect(Collectors.toList());
             return ResponseEntity.ok(facultyDTOS);
     }
