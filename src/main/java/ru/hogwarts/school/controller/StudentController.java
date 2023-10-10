@@ -1,6 +1,7 @@
 package ru.hogwarts.school.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,17 +16,12 @@ import ru.hogwarts.school.service.StudentService;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/student")
 public class StudentController {
     private final StudentService studentService;
     private final MapperService mapperService;
-
-    public StudentController(StudentService studentService, MapperService mapperService) {
-        this.studentService = studentService;
-        this.mapperService = mapperService;
-    }
 
     @PostMapping
     @Operation(summary = "Зачислить студента")

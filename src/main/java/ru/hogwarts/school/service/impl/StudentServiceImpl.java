@@ -1,5 +1,6 @@
 package ru.hogwarts.school.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.exception.ElementNotExistException;
@@ -12,17 +13,11 @@ import ru.hogwarts.school.service.StudentService;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-
+@RequiredArgsConstructor
 @Service
 public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final FacultyService facultyService;
-
-    public StudentServiceImpl(StudentRepository studentRepository, FacultyService facultyService) {
-        this.studentRepository = studentRepository;
-        this.facultyService = facultyService;
-    }
-
     @Override
     public Student addStudent(Student student) {
         student.setFaculty(selectRandomFaculty());

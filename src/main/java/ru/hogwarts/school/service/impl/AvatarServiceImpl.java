@@ -1,5 +1,6 @@
 package ru.hogwarts.school.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -20,17 +21,12 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
-
+@RequiredArgsConstructor
 @Transactional
 @Service
 public class AvatarServiceImpl implements AvatarService {
     private final AvatarRepository avatarRepository;
     private final StudentService studentService;
-
-    public AvatarServiceImpl(AvatarRepository avatarRepository, StudentService studentService) {
-        this.avatarRepository = avatarRepository;
-        this.studentService = studentService;
-    }
 
     @Value("${path.to.avatars.folder}")
     private String avatarsDir;
