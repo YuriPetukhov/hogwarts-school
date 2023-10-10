@@ -1,8 +1,12 @@
 package ru.hogwarts.school.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.util.Objects;
-
+@Getter
+@Setter
 @Entity(name = "students")
 public class Student {
     @Id
@@ -22,39 +26,6 @@ public class Student {
         this.id = id;
         this.name = name;
         this.age = age;
-        this.faculty = faculty;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public Faculty getFaculty() {
-        return faculty;
-    }
-
-    public void setFaculty(Faculty faculty) {
         this.faculty = faculty;
     }
 

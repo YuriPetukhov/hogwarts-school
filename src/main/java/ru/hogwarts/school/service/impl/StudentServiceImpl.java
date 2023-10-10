@@ -1,6 +1,5 @@
 package ru.hogwarts.school.service.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.exception.ElementNotExistException;

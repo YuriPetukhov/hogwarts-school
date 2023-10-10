@@ -1,6 +1,5 @@
 package ru.hogwarts.school.service;
 
-import org.springframework.data.domain.Pageable;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 

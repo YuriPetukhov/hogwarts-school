@@ -1,7 +1,13 @@
 package ru.hogwarts.school.dto;
 
-import java.util.Objects;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.Objects;
+@Data
+@Getter
+@Setter
 public class StudentCreateDTO {
     private Long id;
     private String name;
@@ -15,30 +21,6 @@ public class StudentCreateDTO {
 
     public StudentCreateDTO() {
 
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
     }
 
     @Override

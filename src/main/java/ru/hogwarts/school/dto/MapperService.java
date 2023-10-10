@@ -1,10 +1,8 @@
 package ru.hogwarts.school.dto;
 
-import lombok.Data;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.springframework.stereotype.Component;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 
