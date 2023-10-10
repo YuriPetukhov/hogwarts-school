@@ -12,9 +12,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import ru.hogwarts.school.dto.MapperService;
-import ru.hogwarts.school.dto.StudentCreateDTO;
-import ru.hogwarts.school.dto.StudentDTO;
+import ru.hogwarts.school.dto.*;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
@@ -145,7 +143,7 @@ class StudentControllerRestTemplateTest {
 
 
         ResponseEntity<Student> response = this.testRestTemplate.exchange("http://localhost:" + localServerPort +
-                "/student", HttpMethod.PUT, new HttpEntity<>(savedStudent), Student.class);
+                "/student/" + savedStudent.getId(), HttpMethod.PUT, new HttpEntity<>(savedStudent), Student.class);
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         Assertions.assertThat(Objects.requireNonNull(response.getBody()).getName()).isEqualTo("Mark");
@@ -218,7 +216,6 @@ class StudentControllerRestTemplateTest {
         Faculty testFaculty = new Faculty();
         testFaculty.setName("Gryffindor");
         testFaculty.setColor("green");
-        facultyRepository.save(testFaculty);
         testStudent.setName("Tom");
         testStudent.setAge(22);
         testStudent.setFaculty(testFaculty);
