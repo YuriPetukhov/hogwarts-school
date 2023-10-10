@@ -1,12 +1,16 @@
 package ru.hogwarts.school.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Objects;
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity(name = "students")
 public class Student {
     @Id
@@ -20,15 +24,6 @@ public class Student {
     @JoinColumn(name = "faculty_id")
     private Faculty faculty;
 
-    public Student() {
-    }
-    public Student(Long id, String name, int age, Faculty faculty) {
-        this.id = id;
-        this.name = name;
-        this.age = age;
-        this.faculty = faculty;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -36,7 +31,6 @@ public class Student {
         Student student = (Student) o;
         return Objects.equals(id, student.id);
     }
-
 
     @Override
     public int hashCode() {

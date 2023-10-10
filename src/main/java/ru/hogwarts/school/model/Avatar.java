@@ -1,13 +1,17 @@
 package ru.hogwarts.school.model;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Objects;
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity (name = "avatars")
 public class Avatar {
     @Id
@@ -21,18 +25,6 @@ public class Avatar {
 
     @OneToOne
     private Student student;
-
-    public Avatar() {
-    }
-
-    public Avatar(Long id, String filePath, long fileSize, String mediaType, byte[] data, Student student) {
-        this.id = id;
-        this.filePath = filePath;
-        this.fileSize = fileSize;
-        this.mediaType = mediaType;
-        this.data = data;
-        this.student = student;
-    }
 
     @Override
     public boolean equals(Object o) {
