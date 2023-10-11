@@ -12,7 +12,7 @@ public interface FacultyService {
 
     Faculty findFaculty(Long id);
 
-    Faculty updateFaculty(Faculty faculty);
+    Faculty updateFaculty(Long id, Faculty faculty);
 
     void removeFaculty(long id);
 

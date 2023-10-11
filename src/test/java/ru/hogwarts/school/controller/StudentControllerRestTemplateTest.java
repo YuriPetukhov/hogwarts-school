@@ -12,7 +12,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import ru.hogwarts.school.exception.ElementNotExistException;
+import ru.hogwarts.school.dto.*;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
@@ -37,6 +37,8 @@ class StudentControllerRestTemplateTest {
     private FacultyRepository facultyRepository;
     @Autowired
     private TestRestTemplate testRestTemplate;
+    @Autowired
+    private MapperService mapperService;
     private static List<Student> students;
     private static List<Faculty> faculties;
 
@@ -99,30 +101,30 @@ class StudentControllerRestTemplateTest {
     @Order(1)
     public void testAddStudent() throws Exception {
         facultyRepository.save(faculties.get(0));
-        Student testStudent = students.get(0);
+        StudentCreateDTO testStudentDTO = mapperService.toDtoStudentCreate(students.get(0));
 
-        Student savedTestStudent = this.testRestTemplate.postForObject("http://localhost:" + localServerPort +
-                "/student", testStudent, Student.class);
+        StudentDTO savedTestStudentDTO = this.testRestTemplate.postForObject("http://localhost:" + localServerPort +
+                "/student", testStudentDTO, StudentDTO.class);
 
-        Assertions.assertThat(savedTestStudent).isNotNull();
-        Assertions.assertThat(savedTestStudent.getName()).isEqualTo(testStudent.getName());
-        Assertions.assertThat(savedTestStudent.getAge()).isEqualTo(testStudent.getAge());
+        Assertions.assertThat(savedTestStudentDTO).isNotNull();
+        Assertions.assertThat(savedTestStudentDTO.getName()).isEqualTo(testStudentDTO.getName());
+        Assertions.assertThat(savedTestStudentDTO.getAge()).isEqualTo(testStudentDTO.getAge());
     }
 
     @Test
     @Order(2)
     void testFindStudent() {
 
-        Student testStudent = students.get(0);
-        Student savedTestStudent = studentRepository.save(testStudent);
+        Student savedTestStudent = studentRepository.save(students.get(0));
+        Long id = savedTestStudent.getId();
 
-        Student foundStudent = this.testRestTemplate.getForObject("http://localhost:" + localServerPort +
-                "/student/" + savedTestStudent.getId(), Student.class);
+        StudentDTO foundStudentDTO = this.testRestTemplate.getForObject("http://localhost:" + localServerPort +
+                "/student/" + id, StudentDTO.class);
 
-        Assertions.assertThat(foundStudent).isNotNull();
-        Assertions.assertThat(foundStudent.getId()).isEqualTo(savedTestStudent.getId());
-        Assertions.assertThat(foundStudent.getName()).isEqualTo(testStudent.getName());
-        Assertions.assertThat(foundStudent.getAge()).isEqualTo(testStudent.getAge());
+        Assertions.assertThat(foundStudentDTO).isNotNull();
+        Assertions.assertThat(foundStudentDTO.getId()).isEqualTo(id);
+        Assertions.assertThat(foundStudentDTO.getName()).isEqualTo(savedTestStudent.getName());
+        Assertions.assertThat(foundStudentDTO.getAge()).isEqualTo(savedTestStudent.getAge());
 
         studentRepository.delete(savedTestStudent);
     }
@@ -141,7 +143,7 @@ class StudentControllerRestTemplateTest {
 
 
         ResponseEntity<Student> response = this.testRestTemplate.exchange("http://localhost:" + localServerPort +
-                "/student", HttpMethod.PUT, new HttpEntity<>(savedStudent), Student.class);
+                "/student/" + savedStudent.getId(), HttpMethod.PUT, new HttpEntity<>(savedStudent), Student.class);
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         Assertions.assertThat(Objects.requireNonNull(response.getBody()).getName()).isEqualTo("Mark");
@@ -214,7 +216,6 @@ class StudentControllerRestTemplateTest {
         Faculty testFaculty = new Faculty();
         testFaculty.setName("Gryffindor");
         testFaculty.setColor("green");
-        facultyRepository.save(testFaculty);
         testStudent.setName("Tom");
         testStudent.setAge(22);
         testStudent.setFaculty(testFaculty);

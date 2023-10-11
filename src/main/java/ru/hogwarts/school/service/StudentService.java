@@ -1,6 +1,5 @@
 package ru.hogwarts.school.service;
 
-import org.springframework.data.domain.Pageable;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 
@@ -12,7 +11,7 @@ public interface StudentService {
 
     Optional<Student> findStudent(Long id);
 
-    Student updateStudent(Student student);
+    Student updateStudent(Long id, Student student);
 
     void removeStudent(long id);
 

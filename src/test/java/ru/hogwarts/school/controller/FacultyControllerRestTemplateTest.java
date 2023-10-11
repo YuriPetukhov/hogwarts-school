@@ -4,9 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
@@ -15,13 +15,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import ru.hogwarts.school.exception.ElementNotExistException;
+import ru.hogwarts.school.dto.MapperService;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
 import ru.hogwarts.school.repository.StudentRepository;
-import ru.hogwarts.school.service.FacultyService;
-import ru.hogwarts.school.service.StudentService;
 
 import java.util.*;
 
@@ -37,6 +35,8 @@ class FacultyControllerRestTemplateTest {
     private FacultyRepository facultyRepository;
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private MapperService mapperService;
     @Autowired
     private TestRestTemplate testRestTemplate;
     private static List<Faculty> faculties;
@@ -67,7 +67,7 @@ class FacultyControllerRestTemplateTest {
         Student student2 = new Student();
         student2.setName("TestStudent2");
         student2.setAge(26);
-        student2.setFaculty(faculty2);
+        student2.setFaculty(faculty1);
         students.add(student2);
     }
 
@@ -139,7 +139,7 @@ class FacultyControllerRestTemplateTest {
         updatedFaculty.setColor("UpdatedColor1");
 
         ResponseEntity<Faculty> response = this.testRestTemplate.exchange("http://localhost:" +
-                localServerPort + "/faculty", HttpMethod.PUT, new HttpEntity<>(updatedFaculty), Faculty.class);
+                localServerPort + "/faculty/" + faculty1.getId(), HttpMethod.PUT, new HttpEntity<>(updatedFaculty), Faculty.class);
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         Assertions.assertThat(Objects.requireNonNull(response.getBody()).getName()).isEqualTo("UpdatedFaculty1");
@@ -206,15 +206,17 @@ class FacultyControllerRestTemplateTest {
     void testGetStudentsOfFaculty() {
 
         Faculty testFaculty = faculties.get(0);
-        Faculty savedTestFaculty = facultyRepository.save(testFaculty);
 
         Student student1 = students.get(0);
-        student1.setFaculty(savedTestFaculty);
-        studentRepository.save(student1);
+        student1.setFaculty(testFaculty);
 
         Student student2 = students.get(1);
-        student2.setFaculty(savedTestFaculty);
-        studentRepository.save(student2);
+        student2.setFaculty(testFaculty);
+
+        testFaculty.getStudents().add(student1);
+        testFaculty.getStudents().add(student2);
+
+        Faculty savedTestFaculty = facultyRepository.save(testFaculty);
 
         ResponseEntity<List<Student>> responseEntity = this.testRestTemplate.exchange("http://localhost:" +
                         localServerPort + "/faculty/" + savedTestFaculty.getId() + "/students", HttpMethod.GET, null,

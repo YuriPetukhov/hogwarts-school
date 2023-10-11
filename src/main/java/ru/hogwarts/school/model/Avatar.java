@@ -1,13 +1,15 @@
 package ru.hogwarts.school.model;
 
-import lombok.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Arrays;
 import java.util.Objects;
 @Getter
 @Setter
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity (name = "avatars")
@@ -27,7 +29,8 @@ public class Avatar {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Avatar avatar)) return false;
+        if (!(o instanceof Avatar)) return false;
+        Avatar avatar = (Avatar) o;
         return Objects.equals(id, avatar.id);
     }
 
@@ -35,4 +38,5 @@ public class Avatar {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }

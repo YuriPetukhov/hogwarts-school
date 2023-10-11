@@ -9,6 +9,10 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.hogwarts.school.dto.FacultyDTO;
+import ru.hogwarts.school.dto.MapperService;
+import ru.hogwarts.school.dto.StudentCreateDTO;
+import ru.hogwarts.school.dto.StudentDTO;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.FacultyRepository;
@@ -39,6 +43,8 @@ class StudentControllerWebMvcTest {
     private StudentServiceImpl studentService;
     @SpyBean
     private FacultyServiceImpl facultyService;
+    @MockBean
+    private MapperService mapperService;
     private StudentController studentController;
 
     @Test
@@ -68,11 +74,18 @@ class StudentControllerWebMvcTest {
         student1.setAge(age);
         student1.setFaculty(faculty);
 
-
         when(studentRepository.save(any(Student.class))).thenReturn(student1);
         when(studentRepository.findById(any(Long.class))).thenReturn(Optional.of(student1));
         when(facultyRepository.findAll()).thenReturn(faculties);
 
+        StudentDTO studentDTO = new StudentDTO();
+        studentDTO.setId(id);
+        studentDTO.setName(name);
+        studentDTO.setAge(age);
+        studentDTO.setFacultyId(facultyId);
+
+        when(mapperService.toDtoStudent(student1)).thenReturn(studentDTO);
+        when(mapperService.toEntityStudentCreate(any(StudentCreateDTO.class))).thenReturn(student1);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/student")
@@ -111,11 +124,20 @@ class StudentControllerWebMvcTest {
         updatedStudent.setName(updatedName);
         updatedStudent.setAge(updatedAge);
 
+        StudentDTO studentDTO = new StudentDTO();
+        studentDTO.setId(id);
+        studentDTO.setName(updatedName);
+        studentDTO.setAge(updatedAge);
+
+        when(mapperService.toDtoStudent(updatedStudent)).thenReturn(studentDTO);
+        when(mapperService.toEntityStudent(any(StudentDTO.class))).thenReturn(updatedStudent);
+
         when(studentRepository.existsById(any(Long.class))).thenReturn(true);
         when(studentRepository.save(any(Student.class))).thenReturn(updatedStudent);
 
+
         mockMvc.perform(MockMvcRequestBuilders
-                        .put("/student")
+                        .put("/student/" + id)
                         .content(studentObject.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -148,6 +170,13 @@ class StudentControllerWebMvcTest {
         student1.setName("Student1");
         student1.setAge(age);
 
+        StudentDTO studentDTO = new StudentDTO();
+        studentDTO.setId(1L);
+        studentDTO.setName("Student1");
+        studentDTO.setAge(age);
+
+        when(mapperService.toDtoStudent(student1)).thenReturn(studentDTO);
+
         when(studentService.getStudentsByAge(age)).thenReturn(Collections.singletonList(student1));
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -169,6 +198,13 @@ class StudentControllerWebMvcTest {
         student1.setId(1L);
         student1.setName("Student1");
         student1.setAge(25);
+
+        StudentDTO studentDTO = new StudentDTO();
+        studentDTO.setId(1L);
+        studentDTO.setName("Student1");
+        studentDTO.setAge(25);
+
+        when(mapperService.toDtoStudent(student1)).thenReturn(studentDTO);
 
         when(studentService.findByAgeBetween(min, max)).thenReturn(Collections.singletonList(student1));
 
@@ -200,6 +236,13 @@ class StudentControllerWebMvcTest {
         Student student = new Student();
         student.setId(studentId);
         student.setFaculty(faculty);
+
+        FacultyDTO facultyDTO = new FacultyDTO();
+        facultyDTO.setId(facultyId);
+        facultyDTO.setName(facultyName);
+        facultyDTO.setColor(color);
+
+        when(mapperService.toDtoFaculty(faculty)).thenReturn(facultyDTO);
 
         when(studentRepository.findById(studentId)).thenReturn(Optional.of(student));
 
