@@ -27,4 +27,8 @@ public interface StudentService {
     Double getAverageAge();
 
     List<Student> findLastFiveStudents();
+
+    List<String> findAllStudentsByFirstLetter(Character firstLetter);
+
+    Double getAverageAgeInStream();
 }

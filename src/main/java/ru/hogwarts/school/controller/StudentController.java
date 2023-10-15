@@ -119,4 +119,15 @@ public class StudentController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(studentsDto);
     }
+    @GetMapping("all-students-list/{letter}")
+    @Operation(summary = "Получить список имен всех студентов, чье имя начинается с выбранной буквы")
+    public ResponseEntity<List<String>> findAllStudentsByFirstLetter(@PathVariable("letter") Character firstLetter) {
+        List<String> students = studentService.findAllStudentsByFirstLetter(firstLetter);
+        return ResponseEntity.ok(students);
+    }
+    @GetMapping("average-age-stream")
+    @Operation(summary = "Определить средний возраст студентов в stream")
+    public Double getAverageAgeInStream() {
+        return studentService.getAverageAgeInStream();
+    }
 }
