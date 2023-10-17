@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -22,7 +23,7 @@ public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final FacultyService facultyService;
 
-    Logger logger = LoggerFactory.getLogger(StudentServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(StudentServiceImpl.class);
 
     @Override
     public Student addStudent(Student student) {
@@ -112,6 +113,26 @@ public class StudentServiceImpl implements StudentService {
         logger.info("Was invoked findLastFiveStudents method");
         PageRequest of = PageRequest.of(0, 5);
         return studentRepository.findLastFiveStudents(of);
+    }
+
+    @Override
+    public List<String> findAllStudentsByFirstLetter(Character firstLetter) {
+        logger.info("Was invoked findAllStudentsByFirstLetter method");
+        return studentRepository.findAll().stream()
+                .map(Student::getName)
+                .filter(name -> Character.toUpperCase(name.charAt(0)) == Character.toUpperCase(firstLetter))
+                .map(String::toUpperCase)
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Double getAverageAgeInStream() {
+        logger.info("Was invoked getAverageAgeInStream method");
+        return studentRepository.findAll().stream()
+                .mapToInt(Student::getAge)
+                .average()
+                .orElse(0.0);
     }
 
     private boolean isValidStudent(Student student) {

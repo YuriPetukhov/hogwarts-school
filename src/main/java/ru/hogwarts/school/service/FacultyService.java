@@ -24,4 +24,6 @@ public interface FacultyService {
     List<Faculty> findAll();
 
     Optional<Faculty> findById(Long id);
+
+    String findLongestFacultyName();
 }
