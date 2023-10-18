@@ -25,6 +25,9 @@ public class StudentServiceImpl implements StudentService {
 
     private static final Logger logger = LoggerFactory.getLogger(StudentServiceImpl.class);
 
+    private Integer printCounter = 1;
+    public final Object flag = new Object();
+
     @Override
     public Student addStudent(Student student) {
         logger.info("Was invoked addStudent method");
@@ -133,6 +136,94 @@ public class StudentServiceImpl implements StudentService {
                 .mapToInt(Student::getAge)
                 .average()
                 .orElse(0.0);
+    }
+
+    @Override
+    public void printNamesToConsole() {
+        List<Student> students = studentRepository.findAll();
+        if (students.isEmpty()) {
+            throw new ElementNotExistException("Нет студентов в базе");
+        }
+        if (students.size() < 6) {
+            for (Student student : students) {
+                printName(student.getName());
+            }
+            return;
+        }
+        printName(students.get(0).getName());
+        printName(students.get(1).getName());
+
+        Thread thread1 = new Thread(() -> {
+            printName(students.get(2).getName());
+            printName(students.get(3).getName());
+        });
+
+        Thread thread2 = new Thread(() -> {
+            printName(students.get(4).getName());
+            printName(students.get(5).getName());
+        });
+
+        thread1.start();
+        thread2.start();
+
+        try {
+            thread1.join();
+            thread2.join();
+        } catch (InterruptedException e) {
+            System.err.println("Поток был прерван");
+        }
+
+    }
+
+    @Override
+    public void printNamesToConsoleSynchronized() {
+        List<Student> students = studentRepository.findAll();
+        if (students.isEmpty()) {
+            throw new ElementNotExistException("Нет студентов в базе");
+        }
+        if (students.size() < 6) {
+            for (Student student : students) {
+                printName(student.getName());
+            }
+            return;
+        }
+        printNameSynchronized(students.get(0).getName());
+        printNameSynchronized(students.get(1).getName());
+
+        Thread thread1 = new Thread(() -> {
+            printNameSynchronized(students.get(2).getName());
+            printNameSynchronized(students.get(3).getName());
+        });
+
+        Thread thread2 = new Thread(() -> {
+            printNameSynchronized(students.get(4).getName());
+            printNameSynchronized(students.get(5).getName());
+        });
+
+        thread1.start();
+        thread2.start();
+
+        try {
+            thread1.join();
+            thread2.join();
+        } catch (InterruptedException e) {
+            System.err.println("Поток был прерван");
+        }
+    }
+
+    private void printName(String name) {
+        System.out.println("Имя студента: " + name);
+    }
+
+    private void printNameSynchronized(String name) {
+        synchronized(flag) {
+                System.out.println(printCounter + " Имя студента: " + name);
+                if(printCounter == 6){
+                    printCounter = 1;
+                } else {
+                    printCounter++;
+                }
+        }
     }
 
     private boolean isValidStudent(Student student) {

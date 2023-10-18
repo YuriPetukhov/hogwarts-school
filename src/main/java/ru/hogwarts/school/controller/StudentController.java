@@ -130,4 +130,16 @@ public class StudentController {
     public Double getAverageAgeInStream() {
         return studentService.getAverageAgeInStream();
     }
+    @GetMapping("print-names-to-console")
+    @Operation(summary =  "Запустить два параллельных потока для вывода имен студентов в консоль")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void printNamesToConsole(){
+        studentService.printNamesToConsole();
+    }
+    @GetMapping("print-names-to-console-synchronized")
+    @Operation(summary =  "Запустить два синхронизированных параллельных потока для вывода имен студентов в консоль")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void printNamesToConsoleSynchronized(){
+        studentService.printNamesToConsoleSynchronized();
+    }
 }
