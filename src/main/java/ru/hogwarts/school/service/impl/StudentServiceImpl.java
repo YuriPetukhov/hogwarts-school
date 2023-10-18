@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -24,6 +25,8 @@ public class StudentServiceImpl implements StudentService {
     private final FacultyService facultyService;
 
     private static final Logger logger = LoggerFactory.getLogger(StudentServiceImpl.class);
+
+    private Long printCounter = 1L;
 
     @Override
     public Student addStudent(Student student) {
@@ -133,6 +136,100 @@ public class StudentServiceImpl implements StudentService {
                 .mapToInt(Student::getAge)
                 .average()
                 .orElse(0.0);
+    }
+
+    @Override
+    public void printNamesToConsole() {
+        List<Student> students = studentRepository.findAll();
+        if (students.isEmpty()) {
+            throw new ElementNotExistException("Нет студентов в базе");
+        }
+        int count = 0;
+        while (students.size() > count) {
+            if ((students.size() - count) / 6 == 0) {
+                for (int i = count; i < students.size(); i++) {
+                    printName(students.get(i).getName());
+                }
+                return;
+            } else {
+
+                int finalCount = count;
+
+                printName(students.get(finalCount).getName());
+                printName(students.get(finalCount + 1).getName());
+
+                new Thread(() -> {
+                    printName(students.get(finalCount + 2).getName());
+                    printName(students.get(finalCount + 3).getName());
+                }).start();
+                new Thread(() -> {
+                    printName(students.get(finalCount + 4).getName());
+                    printName(students.get(finalCount + 5).getName());
+                }).start();
+            }
+            count = count + 6;
+
+        }
+    }
+
+    @Override
+    public void printNamesToConsoleSynchronized() {
+        List<Student> students = studentRepository.findAll();
+        if (students.isEmpty()) {
+            throw new ElementNotExistException("Нет студентов в базе");
+        }
+
+        int count = 0;
+        while (students.size() > count) {
+            if ((students.size() - count) / 6 == 0) {
+                for (int i = count; i < students.size(); i++) {
+                    printNameSynchronized(students.get(i).getName());
+                }
+                return;
+            } else {
+
+                int finalCount = count;
+
+                printNameSynchronized(students.get(finalCount).getName());
+                printNameSynchronized(students.get(finalCount + 1).getName());
+
+                Thread thread1 = new Thread(() -> {
+                    printNameSynchronized(students.get(finalCount + 2).getName());
+                    printNameSynchronized(students.get(finalCount + 3).getName());
+                });
+
+                Thread thread2 = new Thread(() -> {
+                    printNameSynchronized(students.get(finalCount + 4).getName());
+                    printNameSynchronized(students.get(finalCount + 5).getName());
+                });
+
+                thread1.start();
+                thread2.start();
+
+                try {
+                    thread1.join();
+                    thread2.join();
+                } catch (InterruptedException e) {
+                    System.err.println("Поток был прерван");
+                }
+            }
+
+            count = count + 6;
+
+        }
+    }
+
+    private void printName(String name) {
+        System.out.println("Имя студента: " + name);
+    }
+
+    private synchronized void printNameSynchronized(String name) {
+        System.out.println(printCounter + " Имя студента: " + name);
+        if (Objects.equals(printCounter, studentRepository.countAllStudents())) {
+            printCounter = 1L;
+        } else {
+            printCounter++;
+        }
     }
 
     private boolean isValidStudent(Student student) {

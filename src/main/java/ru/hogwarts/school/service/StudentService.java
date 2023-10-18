@@ -31,4 +31,8 @@ public interface StudentService {
     List<String> findAllStudentsByFirstLetter(Character firstLetter);
 
     Double getAverageAgeInStream();
+
+    void printNamesToConsole();
+
+    void printNamesToConsoleSynchronized();
 }
