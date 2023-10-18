@@ -139,43 +139,6 @@ public class StudentServiceImpl implements StudentService {
                 .orElse(0.0);
     }
 
-//    @Override
-//    public void printNamesToConsole() {
-//        List<Student> students = studentRepository.findAll();
-//        if (students.isEmpty()) {
-//            throw new ElementNotExistException("Нет студентов в базе");
-//        }
-//        if (students.size() < 6) {
-//            for (Student student : students) {
-//                printName(student.getName());
-//            }
-//            return;
-//        }
-//        printName(students.get(0).getName());
-//        printName(students.get(1).getName());
-//
-//        Thread thread1 = new Thread(() -> {
-//            printName(students.get(2).getName());
-//            printName(students.get(3).getName());
-//        });
-//
-//        Thread thread2 = new Thread(() -> {
-//            printName(students.get(4).getName());
-//            printName(students.get(5).getName());
-//        });
-//
-//        thread1.start();
-//        thread2.start();
-//
-//        try {
-//            thread1.join();
-//            thread2.join();
-//        } catch (InterruptedException e) {
-//            System.err.println("Поток был прерван");
-//        }
-//
-//    }
-
     @Override
     public void printNamesToConsole() {
         List<Student> students = studentRepository.findAll();
@@ -209,42 +172,6 @@ public class StudentServiceImpl implements StudentService {
 
         }
     }
-
-//    @Override
-//    public void printNamesToConsoleSynchronized() {
-//        List<Student> students = studentRepository.findAll();
-//        if (students.isEmpty()) {
-//            throw new ElementNotExistException("Нет студентов в базе");
-//        }
-//        if (students.size() < 6) {
-//            for (Student student : students) {
-//                printName(student.getName());
-//            }
-//            return;
-//        }
-//        printNameSynchronized(students.get(0).getName());
-//        printNameSynchronized(students.get(1).getName());
-//
-//        Thread thread1 = new Thread(() -> {
-//            printNameSynchronized(students.get(2).getName());
-//            printNameSynchronized(students.get(3).getName());
-//        });
-//
-//        Thread thread2 = new Thread(() -> {
-//            printNameSynchronized(students.get(4).getName());
-//            printNameSynchronized(students.get(5).getName());
-//        });
-//
-//        thread1.start();
-//        thread2.start();
-//
-//        try {
-//            thread1.join();
-//            thread2.join();
-//        } catch (InterruptedException e) {
-//            System.err.println("Поток был прерван");
-//        }
-//    }
 
     @Override
     public void printNamesToConsoleSynchronized() {
@@ -293,20 +220,17 @@ public class StudentServiceImpl implements StudentService {
         }
     }
 
-
     private void printName(String name) {
         System.out.println("Имя студента: " + name);
     }
 
-    private void printNameSynchronized(String name) {
-        synchronized (flag) {
+    private synchronized void printNameSynchronized(String name) {
             System.out.println(printCounter + " Имя студента: " + name);
             if (Objects.equals(printCounter, studentRepository.countAllStudents())) {
                 printCounter = 1L;
             } else {
                 printCounter++;
             }
-        }
     }
 
     private boolean isValidStudent(Student student) {

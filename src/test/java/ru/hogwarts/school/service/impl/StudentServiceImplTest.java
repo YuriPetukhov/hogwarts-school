@@ -3,7 +3,6 @@ package ru.hogwarts.school.service.impl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -101,7 +100,6 @@ public class StudentServiceImplTest {
 
         students.forEach(student -> assertTrue(outContent.toString().contains("Имя студента: " + student.getName())));
     }
-
     @Test
     public void testPrintNamesToConsoleSynchronized_noStudents() {
         when(studentRepository.findAll()).thenReturn(Collections.emptyList());
@@ -121,7 +119,7 @@ public class StudentServiceImplTest {
         );
 
         when(studentRepository.findAll()).thenReturn(students);
-        when(studentRepository.countAllStudents()).thenReturn((long) students.size());
+        when(studentRepository.countAllStudents()).thenReturn((long)students.size());
 
         studentService.printNamesToConsoleSynchronized();
 
@@ -142,7 +140,7 @@ public class StudentServiceImplTest {
                 new Student(6L, "Ginny", 21, null)
         );
         when(studentRepository.findAll()).thenReturn(students);
-        when(studentRepository.countAllStudents()).thenReturn((long) students.size());
+        when(studentRepository.countAllStudents()).thenReturn((long)students.size());
 
         studentService.printNamesToConsoleSynchronized();
 
@@ -165,7 +163,7 @@ public class StudentServiceImplTest {
                 new Student(7L, "Dumbledore", 21, null)
         );
         when(studentRepository.findAll()).thenReturn(students);
-        when(studentRepository.countAllStudents()).thenReturn((long) students.size());
+        when(studentRepository.countAllStudents()).thenReturn((long)students.size());
 
         studentService.printNamesToConsoleSynchronized();
 
