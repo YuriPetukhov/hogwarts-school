@@ -27,7 +27,6 @@ public class StudentServiceImpl implements StudentService {
     private static final Logger logger = LoggerFactory.getLogger(StudentServiceImpl.class);
 
     private Long printCounter = 1L;
-    public final Object flag = new Object();
 
     @Override
     public Student addStudent(Student student) {
@@ -147,7 +146,7 @@ public class StudentServiceImpl implements StudentService {
         }
         int count = 0;
         while (students.size() > count) {
-            if((students.size() - count) / 6 == 0) {
+            if ((students.size() - count) / 6 == 0) {
                 for (int i = count; i < students.size(); i++) {
                     printName(students.get(i).getName());
                 }
@@ -225,12 +224,12 @@ public class StudentServiceImpl implements StudentService {
     }
 
     private synchronized void printNameSynchronized(String name) {
-            System.out.println(printCounter + " Имя студента: " + name);
-            if (Objects.equals(printCounter, studentRepository.countAllStudents())) {
-                printCounter = 1L;
-            } else {
-                printCounter++;
-            }
+        System.out.println(printCounter + " Имя студента: " + name);
+        if (Objects.equals(printCounter, studentRepository.countAllStudents())) {
+            printCounter = 1L;
+        } else {
+            printCounter++;
+        }
     }
 
     private boolean isValidStudent(Student student) {
