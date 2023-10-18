@@ -138,41 +138,75 @@ public class StudentServiceImpl implements StudentService {
                 .orElse(0.0);
     }
 
+//    @Override
+//    public void printNamesToConsole() {
+//        List<Student> students = studentRepository.findAll();
+//        if (students.isEmpty()) {
+//            throw new ElementNotExistException("Нет студентов в базе");
+//        }
+//        if (students.size() < 6) {
+//            for (Student student : students) {
+//                printName(student.getName());
+//            }
+//            return;
+//        }
+//        printName(students.get(0).getName());
+//        printName(students.get(1).getName());
+//
+//        Thread thread1 = new Thread(() -> {
+//            printName(students.get(2).getName());
+//            printName(students.get(3).getName());
+//        });
+//
+//        Thread thread2 = new Thread(() -> {
+//            printName(students.get(4).getName());
+//            printName(students.get(5).getName());
+//        });
+//
+//        thread1.start();
+//        thread2.start();
+//
+//        try {
+//            thread1.join();
+//            thread2.join();
+//        } catch (InterruptedException e) {
+//            System.err.println("Поток был прерван");
+//        }
+//
+//    }
+
     @Override
     public void printNamesToConsole() {
         List<Student> students = studentRepository.findAll();
         if (students.isEmpty()) {
             throw new ElementNotExistException("Нет студентов в базе");
         }
-        if (students.size() < 6) {
-            for (Student student : students) {
-                printName(student.getName());
+        int count = 0;
+        while (students.size() > count) {
+            if((students.size() - count) / 6 == 0) {
+                for (int i = count; i < students.size(); i++) {
+                    printName(students.get(i).getName());
+                }
+                return;
+            } else {
+
+                int finalCount = count;
+
+                printName(students.get(finalCount).getName());
+                printName(students.get(finalCount + 1).getName());
+
+                new Thread(() -> {
+                    printName(students.get(finalCount + 2).getName());
+                    printName(students.get(finalCount + 3).getName());
+                }).start();
+                new Thread(() -> {
+                    printName(students.get(finalCount + 4).getName());
+                    printName(students.get(finalCount + 5).getName());
+                }).start();
             }
-            return;
+            count = count + 6;
+
         }
-        printName(students.get(0).getName());
-        printName(students.get(1).getName());
-
-        Thread thread1 = new Thread(() -> {
-            printName(students.get(2).getName());
-            printName(students.get(3).getName());
-        });
-
-        Thread thread2 = new Thread(() -> {
-            printName(students.get(4).getName());
-            printName(students.get(5).getName());
-        });
-
-        thread1.start();
-        thread2.start();
-
-        try {
-            thread1.join();
-            thread2.join();
-        } catch (InterruptedException e) {
-            System.err.println("Поток был прерван");
-        }
-
     }
 
     @Override
@@ -216,13 +250,13 @@ public class StudentServiceImpl implements StudentService {
     }
 
     private void printNameSynchronized(String name) {
-        synchronized(flag) {
-                System.out.println(printCounter + " Имя студента: " + name);
-                if(printCounter == 6){
-                    printCounter = 1;
-                } else {
-                    printCounter++;
-                }
+        synchronized (flag) {
+            System.out.println(printCounter + " Имя студента: " + name);
+            if (printCounter == 6) {
+                printCounter = 1;
+            } else {
+                printCounter++;
+            }
         }
     }
 
